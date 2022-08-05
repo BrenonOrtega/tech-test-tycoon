@@ -1,14 +1,17 @@
 [
   {
+    "Id": "d7b56v32-a9w1-4186-a45a-32d08ec8bc52",
     "Name": "A",
     "Status": "Resting",
     "Activities": [
       {
+        "id": "z4b56d32-a9ad-4186-a45a-32d08ec8bc52",
         "Type": "Component",
         "StartDate": "2022-5-8T15:30:00.000z",
         "StartDate": "2022-5-8T17:30:00.000z"
       },
       {
+        "id": "a4b56d32-a9ad-4186-a45a-32d08ec8bc52",
         "Type": "Component",
         "StartDate": "2022-5-8T15:30:00.000z",
         "StartDate": "2022-5-8T17:30:00.000z",
@@ -17,6 +20,7 @@
     ]
   },
   {
+    "Id": "d7b56v32-a9w1-4186-a45a-32d08ec8bc52",
     "Name": "B",
     "Status": "Working",
     "Schedule": [
