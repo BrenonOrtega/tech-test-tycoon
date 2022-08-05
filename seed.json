@@ -1,0 +1,36 @@
+[
+  {
+    "Name": "A",
+    "Status": "Resting",
+    "Activities": [
+      {
+        "Type": "Component",
+        "StartDate": "2022-5-8T15:30:00.000z",
+        "StartDate": "2022-5-8T17:30:00.000z"
+      },
+      {
+        "Type": "Component",
+        "StartDate": "2022-5-8T15:30:00.000z",
+        "StartDate": "2022-5-8T17:30:00.000z",
+        "Workers": ["A", "B", "C"]
+      }
+    ]
+  },
+  {
+    "Name": "B",
+    "Status": "Working",
+    "Schedule": [
+      {
+        "Type": "Component",
+        "StartDate": "2022-5-8T15:30:00.000z",
+        "StartDate": "2022-5-8T17:30:00.000z"
+      },
+      {
+        "Type": "Component",
+        "StartDate": "2022-5-8T15:30:00.000z",
+        "StartDate": "2022-5-8T17:30:00.000z",
+        "Workers": ["A", "B", "C"]
+      }
+    ]
+  }
+]
