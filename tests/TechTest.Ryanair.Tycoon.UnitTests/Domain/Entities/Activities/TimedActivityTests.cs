@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using TechTest.Ryanair.Tycoon.Domain.Entities;
 
 namespace TechTest.Ryanair.Tycoon.UnitTests.Domain.Entities.Activities
@@ -32,6 +28,32 @@ namespace TechTest.Ryanair.Tycoon.UnitTests.Domain.Entities.Activities
             var wrongAction = () => new BuildComponentActivity(Guid.NewGuid(), DateTime.Now, DateTime.Now.AddMilliseconds(-1));
             wrongAction.Should().Throw<ArgumentException>();
         }
+
+        [Theory]
+        [MemberData(nameof(TypeActivitiesGenerator))]
+        public void Activity_Should_Tell_Its_Resting_Time(Type type)
+        {
+            var activityType = Activator.CreateInstance(type, new object[] { Guid.NewGuid(), DateTime.Now, DateTime.Now.AddSeconds(1)}) as TimedActivity;
+
+            activityType.FinishRestingDate.Should().BeMoreThan(TimeSpan.Zero);
+        }
+
+        [Theory]
+        [MemberData(nameof(TypeActivitiesGenerator))]
+        public void Activity_Should_Tell_Its_Type(Type type)
+        {
+            var activityType = Activator.CreateInstance(type, new object[] { Guid.NewGuid(), DateTime.Now, DateTime.Now.AddSeconds(1) }) as TimedActivity;
+
+            activityType.Type.Should().NotBe(String.Empty);
+            activityType.Type.Should().NotBeNull();
+        }
+
+        public static IEnumerable<object[]> TypeActivitiesGenerator() 
+            => typeof(TimedActivity).Assembly
+                .GetTypes()
+                .Where(x => x.IsSubclassOf(typeof(TimedActivity)))
+                .Select(x => new object[] { x });
+
         public static IEnumerable<object[]> OverlappingActivitiesGenerator()
         {
             yield return new object[]
@@ -68,13 +90,13 @@ namespace TechTest.Ryanair.Tycoon.UnitTests.Domain.Entities.Activities
         public static IEnumerable<object[]> NonOverlappingActivitiesGenerator()
         {
             yield return new object[]
-            {   
+            {
                 new BuildComponentActivity( Guid.NewGuid(), new DateTime(year: 2022, month: 05, day: 20, hour: 10, minute:00, second:00), new DateTime(year: 2022, month: 05, day: 20, hour: 15, minute:00, second:00)),
                 new BuildMachineActivity(   Guid.NewGuid(), new DateTime(year: 2022, month: 05, day: 20, hour: 17, minute:00, second:00), new DateTime(year: 2022, month: 05, day: 20, hour: 18, minute:35, second:00))
             };
 
             yield return new object[]
-            {   
+            {
                 new BuildMachineActivity(   Guid.NewGuid(), new DateTime(year: 2022, month: 05, day: 10, hour: 12, minute:0, second:0), new DateTime(year: 2022, month: 05, day: 10, hour: 17, minute:0, second:00)),
                 new BuildMachineActivity(   Guid.NewGuid(), new DateTime(year: 2022, month: 05, day: 10, hour: 21, minute:0, second:0), new DateTime(year: 2022, month: 05, day: 10, hour: 21, minute:30, second:00))
             };
@@ -86,7 +108,7 @@ namespace TechTest.Ryanair.Tycoon.UnitTests.Domain.Entities.Activities
             };
 
             yield return new object[]
-            { 
+            {
                 new BuildComponentActivity( Guid.NewGuid(), new DateTime(year: 2022, month: 05, day: 10, hour: 15, minute:33, second:20), new DateTime(year: 2022, month: 05, day: 10, hour: 15, minute:50, second:50)),
                 new BuildComponentActivity( Guid.NewGuid(), new DateTime(year: 2022, month: 05, day: 05, hour: 15, minute:50, second:20), new DateTime(year: 2022, month: 05, day: 06, hour: 16, minute:35, second:00))
             };
