@@ -1,4 +1,4 @@
-using TechTest.Ryanair.Tycoon.Domain.FluentApi.Activity;
+using TechTest.Ryanair.Tycoon.Domain.FluentApi.Worker;
 
 namespace TechTest.Ryanair.Tycoon.Domain.Entities;
 
@@ -6,6 +6,7 @@ public class Worker : IActivityWorker
 {
     public Guid Id { get; set; }
     public string Name { get; set; }
+    public List<TimedActivity> Activities { get; } = new();
     public Status ActualStatus
     {
         get
@@ -20,7 +21,6 @@ public class Worker : IActivityWorker
             return Status.Idle;
         }
     }
-    public List<TimedActivity> Activities { get; } = new();
 
     public Worker(Guid id, string name)
     {

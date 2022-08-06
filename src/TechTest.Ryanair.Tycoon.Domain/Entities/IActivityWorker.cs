@@ -1,4 +1,4 @@
-using TechTest.Ryanair.Tycoon.Domain.FluentApi.Activity;
+using TechTest.Ryanair.Tycoon.Domain.FluentApi.Worker;
 
 namespace TechTest.Ryanair.Tycoon.Domain.Entities;
 

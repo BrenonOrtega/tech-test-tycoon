@@ -1,7 +1,7 @@
 using Awarean.Sdk.Result;
 using TechTest.Ryanair.Tycoon.Domain.Entities;
 
-namespace TechTest.Ryanair.Tycoon.Domain.FluentApi.Activity
+namespace TechTest.Ryanair.Tycoon.Domain.FluentApi.Worker
 {
     public class WorksInResult : Result<IActivityWorker>, IActivityWorker
     {
