@@ -1,6 +1,7 @@
 namespace TechTest.Ryanair.Tycoon.Domain.Entities
 {
-    public abstract class Activity
+    public class BuildComponentActivity : TimedActivity
     {
+
     }
 }

@@ -6,17 +6,37 @@ public class Worker : IActivityWorker
 {
     public Guid Id { get; set; }
     public string Name { get; set; }
-    public List<Activity> Activities { get; set; }
-    public WorkerStatus Status { get; set; }
+    public WorkingStatus Status
+    {
+        get
+        {
+            if (Activities.Any(x => x.Start < DateTime.Now && x.Finish > DateTime.Now))
+                return WorkingStatus.Working;
 
-    public WorksInResult WorksIn(Activity activity)
-    {
-        Activities.Any(x => x.StartDate <= activity )
+            if (Activities.Any(x => x.Start < DateTime.Now && x.Finish > DateTime.Now && x.Finish + x.RestTime < DateTime.Now))
+                return WorkingStatus.Recharging;
+
+            return WorkingStatus.Idle;
+        }
     }
-}
-    public enum WorkerStatus
+    public List<TimedActivity> Activities { get; } = new();
+
+    public Worker(Guid id, string name)
     {
-        Recharging,
+        Id = id;
+        Name = name;
+    }
+
+    public WorksInResult WorksIn(TimedActivity activity)
+    {
+        if (Activities.Exists(act => act.Equals(activity)))
+            return new WorksInResult(DomainErrors.AlreadyWorksInActivity)
+    }
+
+    public enum WorkingStatus
+    {
         Working,
+        Recharging,
         Idle
     }
+}
