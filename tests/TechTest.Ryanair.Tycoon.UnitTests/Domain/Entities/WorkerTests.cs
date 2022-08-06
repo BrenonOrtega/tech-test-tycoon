@@ -1,5 +1,5 @@
-using Xunit;
-using TechTest.Ryanair.Tycoon.Domain.Entities; 
+using TechTest.Ryanair.Tycoon.Domain;
+using TechTest.Ryanair.Tycoon.Domain.Entities;
 
 namespace TechTest.Ryanair.Tycoon.UnitTests.Domain.Entities;
 
@@ -10,38 +10,59 @@ public class WorkerTests
     {
         // Given
         var sut = new Worker(name: "A", id: Guid.NewGuid());
-        
+
         // When
-        var activiy = new ComponentBuildActivity(startDate: DateTime.UtcNow, endDate: DateTime.Now.AddDays(1));
-        var overlapping = new MachineBuildActivity(startDate: DateTime.Now.AddMinutes(30), endDate: DateTime.Now.AddHours(40));
-    
+        var activity = new BuildComponentActivity(id: Guid.NewGuid(), start: DateTime.UtcNow, finish: DateTime.Now.AddDays(1));
+        var overlapping = new BuildMachineActivity(id: Guid.NewGuid(), start: DateTime.Now.AddMinutes(30), finish: DateTime.Now.AddHours(40));
+
         // Then
-        var result = 
-            sut.WorksIn(activiy)
+        var result =
+            sut.WorksIn(activity)
                 .WorksIn(overlapping);
 
-        result.IsSucces.Should().BeFalse();
+        result.IsSuccess.Should().BeFalse();
         result.Error.Should().Be(DomainErrors.OverlappingActivities);
-        result.OverlappingActivities.Should().HaveCount(1);
+        result.FailedActivity.Should().Be(overlapping);
     }
-    
+
     [Fact]
     public void Duplicated_Activities_Should_Fail()
     {
         // Given
         var sut = new Worker(name: "A", id: Guid.NewGuid());
-        
-        // When
-        var activiy = new ComponentBuildActivity(startDate: DateTime.UtcNow, endDate: DateTime.Now.AddDays(1));
-        var overlapping = new MachineBuildActivity(startDate: DateTime.Now.AddMinutes(30), endDate: DateTime.Now.AddHours(40));
-    
-        // Then
-        var result = 
-            sut.WorksIn(activiy)
-                .WorksIn(overlapping);
 
-        result.IsSucces.Should().BeFalse();
-        result.Error.Should().Be(DomainErrors.OverlappingActivities);
-        result.OverlappingActivities.Should().HaveCount(1);
+        // When
+        var activity = new BuildComponentActivity(id: Guid.NewGuid(), start: DateTime.UtcNow, finish: DateTime.Now.AddDays(1));
+
+        // Then
+        var result =
+            sut.WorksIn(activity)
+                .WorksIn(activity);
+
+        result.IsSuccess.Should().BeFalse();
+        result.Error.Should().Be(DomainErrors.AlreadyWorksInActivity);
+        result.FailedActivity.Should().Be(activity);
+    }
+
+    [Theory]
+    [MemberData(nameof(StatusGenerator))]
+    public void Worker_Status_Should_Depend_On_Activities(Worker.Status expectedStatus, TimedActivity activity)
+    {
+        var worker = new Worker(Guid.NewGuid(), "A");
+
+        var result = worker.WorksIn(activity);
+
+        result.IsSuccess.Should().BeTrue();
+
+        var actual = result.Value as Worker;
+
+        actual.ActualStatus.Should().Be(expectedStatus);
+    }
+
+    public static IEnumerable<object[]> StatusGenerator()
+    {
+        yield return new object[] { Worker.Status.Working, new BuildComponentActivity(Guid.NewGuid(), DateTime.Now.AddSeconds(-1), DateTime.Now.AddSeconds(30)) };
+        yield return new object[] { Worker.Status.Recharging, new BuildComponentActivity(Guid.NewGuid(), DateTime.Now.AddSeconds(-10), DateTime.Now.AddSeconds(-1)) };
+        yield return new object[] { Worker.Status.Idle, new BuildComponentActivity(Guid.NewGuid(), DateTime.Now.AddSeconds(-1), DateTime.Now.AddSeconds(30)) };
     }
 }
