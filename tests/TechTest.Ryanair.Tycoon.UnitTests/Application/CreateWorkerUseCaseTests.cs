@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using TechTest.Ryanair.Tycoon.Application.CreateWorker;
+using TechTest.Ryanair.Tycoon.Domain.Repositories;
 
 namespace TechTest.Ryanair.Tycoon.UnitTests.Application
 {
@@ -9,10 +10,10 @@ namespace TechTest.Ryanair.Tycoon.UnitTests.Application
         public async Task Creating_Valid_Use_Should_Pass()
         {
             var logger = Substitute.For<ILogger<CreateWorkerUseCase>>();
-            var unitOfWork = Substitute.For<IApplicationUnitOfWork>();
+            var unitOfWork = Substitute.For<IUnitOfWork>();
 
             var request = new CreateWorkerCommand() { Id = Guid.NewGuid(), Name = "A" };
-            ICreateWorkerUseCase sut = new CreateWorkerUseCase();
+            ICreateWorkerUseCase sut = new CreateWorkerUseCase(logger, unitOfWork);
 
             var result = await sut.HandleAsync(request);
 
