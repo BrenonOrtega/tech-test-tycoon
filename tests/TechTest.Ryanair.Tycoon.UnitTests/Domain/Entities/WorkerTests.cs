@@ -6,6 +6,21 @@ namespace TechTest.Ryanair.Tycoon.UnitTests.Domain.Entities;
 public class WorkerTests
 {
     [Fact]
+    public void Invalid_Activities_Should_Be_Invalid()
+    {
+          // Given
+        var sut = new Worker(name: "A", id: Guid.NewGuid());
+
+        // When
+        var result = sut.WorksIn(null);
+
+        // Then
+        result.IsSuccess.Should().BeFalse();
+        result.Error.Should().Be(DomainErrors.TryWorkingInInvalidActivity);
+        result.FailedActivity.Should().BeNull();
+    }
+
+    [Fact]
     public void Adding_An_Activity_Should_Validate_Overlaps()
     {
         // Given

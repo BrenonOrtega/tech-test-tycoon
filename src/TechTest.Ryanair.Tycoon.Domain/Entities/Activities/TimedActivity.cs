@@ -50,12 +50,13 @@ namespace TechTest.Ryanair.Tycoon.Domain.Entities
             if (other is null)
                 return false;
 
+            var IdEquals = other.Id == Id;
             var startsEqual = other.Start == Start;
             var finishEquals = other.Finish == Finish;
             var restingDateEquals = other.FinishRestingDate == FinishRestingDate;
             var restTime = other.RestTime == other.RestTime;
 
-            return startsEqual && finishEquals && restingDateEquals && restTime;
+            return IdEquals && startsEqual && finishEquals && restingDateEquals && restTime;
         }
 
         public override bool Equals(object? obj)
@@ -71,7 +72,8 @@ namespace TechTest.Ryanair.Tycoon.Domain.Entities
 
         public override int GetHashCode()
         {
-            return Start.GetHashCode() 
+            return Id.GetHashCode()
+                + Start.GetHashCode() 
                 + Finish.GetHashCode() 
                 + FinishRestingDate.GetHashCode() 
                 + RestTime.GetHashCode();
