@@ -1,12 +1,15 @@
 
+using Awarean.Sdk.Result;
 using System;
+using System.Collections.Immutable;
 
 namespace TechTest.Ryanair.Tycoon.Domain.Entities
 {
-    public abstract class TimedActivity
+    public abstract class TimedActivity : IEquatable<TimedActivity>
     {
         public virtual Guid Id { get; protected set; }
-        public virtual List<string> Workers { get; protected set; }
+        protected readonly HashSet<Guid> _workers = new();
+        public virtual ImmutableHashSet<Guid> Workers => _workers.ToImmutableHashSet();
         public virtual DateTime Start { get; protected set; }
         public virtual DateTime Finish { get; protected set; }
         public virtual TimeSpan Duration => Start - Finish;
@@ -19,6 +22,7 @@ namespace TechTest.Ryanair.Tycoon.Domain.Entities
             if (start > finish)
                 throw new ArgumentException("A start can not be after its end.");
 
+            Id = id;
             Start = start;
             Finish = finish;
         }
@@ -30,6 +34,47 @@ namespace TechTest.Ryanair.Tycoon.Domain.Entities
             var finishesBefore = other.FinishRestingDate <= Start && other.Start < Start;
 
             return !(otherStartsAfter || finishesBefore);
+        }
+
+        public Result HaveParticipant(Worker worker)
+        {
+            if (worker.Activities.Contains(this) is false)
+                return Result.Fail(DomainErrors.InconsistentWorkerInActivity);
+
+            _workers.Add(worker.Id);
+            return Result.Success();
+        }
+
+        public bool Equals(TimedActivity? other)
+        {
+            if (other is null)
+                return false;
+
+            var startsEqual = other.Start == Start;
+            var finishEquals = other.Finish == Finish;
+            var restingDateEquals = other.FinishRestingDate == FinishRestingDate;
+            var restTime = other.RestTime == other.RestTime;
+
+            return startsEqual && finishEquals && restingDateEquals && restTime;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is null)
+                return false;
+
+            if (obj is not TimedActivity act)
+                return false;
+
+            return Equals(act);
+        }
+
+        public override int GetHashCode()
+        {
+            return Start.GetHashCode() 
+                + Finish.GetHashCode() 
+                + FinishRestingDate.GetHashCode() 
+                + RestTime.GetHashCode();
         }
     }
 }
