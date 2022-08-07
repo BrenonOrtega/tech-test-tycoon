@@ -5,10 +5,12 @@ namespace TechTest.Ryanair.Tycoon.Domain.Entities;
 
 public class Worker : IActivityWorker
 {
-    public Guid Id { get; set; }
-    public string Name { get; set; }
+    public Guid Id { get; private set; }
+    public string Name { get; private set; }
+
     private readonly HashSet<TimedActivity> _activities = new();
     public ImmutableHashSet<TimedActivity> Activities => _activities.ToImmutableHashSet(); 
+
     public Status ActualStatus
     {
         get
@@ -32,8 +34,11 @@ public class Worker : IActivityWorker
 
     public WorksInResult WorksIn(TimedActivity activity)
     {
-        if (this == Worker.Null)
+        if (this == Null)
             return new WorksInResult(DomainErrors.AddingActivityToNullWorker, activity);
+
+        if (activity is null || activity == TimedActivity.Null)
+            return new WorksInResult(DomainErrors.TryWorkingInInvalidActivity, TimedActivity.Null);
 
         if (_activities.Contains(activity))
             return new WorksInResult(DomainErrors.AlreadyWorksInActivity, activity);
@@ -48,7 +53,6 @@ public class Worker : IActivityWorker
             return new WorksInResult(result.Error, activity);
             
         return new WorksInResult(this);
-
     }
 
     public enum Status
@@ -58,5 +62,5 @@ public class Worker : IActivityWorker
         Idle
     }
 
-    public static readonly Worker Null = new Worker(Guid.Empty, string.Empty);
+    public static readonly Worker Null = new(Guid.Empty, string.Empty);
 }

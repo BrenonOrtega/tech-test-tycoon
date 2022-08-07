@@ -75,7 +75,7 @@ namespace TechTest.Ryanair.Tycoon.UnitTests.Domain.Entities.Activities
         public static IEnumerable<object[]> TypeActivitiesGenerator() 
             => typeof(TimedActivity).Assembly
                 .GetTypes()
-                .Where(x => x.IsSubclassOf(typeof(TimedActivity)))
+                .Where(x => x.IsSubclassOf(typeof(TimedActivity)) && x.GetConstructor(new[] { typeof(Guid), typeof(DateTime), typeof(DateTime) }) is not null)
                 .Select(x => new object[] { x });
 
         public static IEnumerable<object[]> OverlappingActivitiesGenerator()

@@ -19,7 +19,7 @@ namespace TechTest.Ryanair.Tycoon.Domain.Entities
 
         public TimedActivity(Guid id, DateTime start, DateTime finish)
         {
-            if (start > finish)
+            if (start >= finish)
                 throw new ArgumentException("A start can not be after its end.");
 
             Id = id;
@@ -77,6 +77,15 @@ namespace TechTest.Ryanair.Tycoon.Domain.Entities
                 + Finish.GetHashCode() 
                 + FinishRestingDate.GetHashCode() 
                 + RestTime.GetHashCode();
+        }
+
+        public static readonly TimedActivity Null = new NullActivity();
+        private class NullActivity : TimedActivity
+        {
+            public NullActivity() : this(Guid.Empty, DateTime.MinValue, DateTime.MaxValue) { }
+            private NullActivity(Guid id, DateTime start, DateTime finish) : base(id, start, finish) { }
+            public override TimeSpan RestTime => TimeSpan.Zero;
+            public override string Type => "NULL";
         }
     }
 }

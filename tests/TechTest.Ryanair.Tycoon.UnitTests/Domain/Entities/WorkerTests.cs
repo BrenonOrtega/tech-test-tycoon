@@ -5,22 +5,23 @@ namespace TechTest.Ryanair.Tycoon.UnitTests.Domain.Entities;
 
 public class WorkerTests
 {
-    [Fact]
-    public void Invalid_Activities_Should_Be_Invalid()
+    [Theory]
+    [MemberData(nameof(InvalidActivityGenerator))]
+    public void Invalid_Activities_Should_Be_Invalid(TimedActivity invalidActivity)
     {
           // Given
         var sut = new Worker(name: "A", id: Guid.NewGuid());
 
         // When
-        var result = sut.WorksIn(null);
+        var result = sut.WorksIn(invalidActivity);
 
         // Then
         result.IsSuccess.Should().BeFalse();
         result.Error.Should().Be(DomainErrors.TryWorkingInInvalidActivity);
-        result.FailedActivity.Should().BeNull();
+        result.FailedActivity.Should().Be(TimedActivity.Null);
     }
 
-    [Fact]
+   [Fact]
     public void Adding_An_Activity_Should_Validate_Overlaps()
     {
         // Given
@@ -90,5 +91,11 @@ public class WorkerTests
         yield return new object[] { Worker.Status.Working, new BuildComponentActivity(Guid.NewGuid(), DateTime.Now.AddSeconds(-1), DateTime.Now.AddSeconds(30)) };
         yield return new object[] { Worker.Status.Recharging, new BuildComponentActivity(Guid.NewGuid(), DateTime.Now.AddSeconds(-10), DateTime.Now.AddSeconds(-1)) };
         yield return new object[] { Worker.Status.Idle, new BuildComponentActivity(Guid.NewGuid(), DateTime.Now.AddDays(-1), DateTime.Now.AddHours(-5)) };
+    }
+
+    public static IEnumerable<object[]> InvalidActivityGenerator()
+    {
+        yield return new object[] { null };
+        yield return new object[] { TimedActivity.Null };
     }
 }
