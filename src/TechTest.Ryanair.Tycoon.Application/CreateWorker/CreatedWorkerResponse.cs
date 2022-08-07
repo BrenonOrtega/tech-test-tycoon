@@ -2,6 +2,13 @@
 {
     public class CreatedWorkerResponse
     {
-        public Guid Id { get; set; }
+        public CreatedWorkerResponse(Guid id)
+        {
+            Id = id;
+        }
+
+        public Guid Id { get; init; }
+
+        public static readonly CreatedWorkerResponse Null = new(Guid.Empty);
     }
 }
