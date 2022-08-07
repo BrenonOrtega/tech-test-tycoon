@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TechTest.Ryanair.Tycoon.Application\TechTest.Ryanair.Tycoon.Application.csproj" />
+    <ProjectReference Include="..\TechTest.Ryanair.Tycoon.Infra\TechTest.Ryanair.Tycoon.Infra.csproj" />
   </ItemGroup>
 
 </Project>

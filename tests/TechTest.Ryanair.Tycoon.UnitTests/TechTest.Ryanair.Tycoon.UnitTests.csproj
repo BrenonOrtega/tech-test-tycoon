@@ -25,7 +25,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\TechTest.Ryanair.Tycoon.Api\TechTest.Ryanair.Tycoon.Api.csproj" />
+    <ProjectReference Include="..\..\src\TechTest.Ryanair.Tycoon.Application\TechTest.Ryanair.Tycoon.Application.csproj" />
     <ProjectReference Include="..\..\src\TechTest.Ryanair.Tycoon.Domain\TechTest.Ryanair.Tycoon.Domain.csproj" />
+    <ProjectReference Include="..\..\src\TechTest.Ryanair.Tycoon.Infra\TechTest.Ryanair.Tycoon.Infra.csproj" />
   </ItemGroup>
 
 </Project>
