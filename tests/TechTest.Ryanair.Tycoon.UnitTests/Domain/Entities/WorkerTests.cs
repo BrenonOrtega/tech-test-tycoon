@@ -12,8 +12,8 @@ public class WorkerTests
         var sut = new Worker(name: "A", id: Guid.NewGuid());
 
         // When
-        var activity = new BuildComponentActivity(id: Guid.NewGuid(), start: DateTime.UtcNow, finish: DateTime.Now.AddDays(1));
-        var overlapping = new BuildMachineActivity(id: Guid.NewGuid(), start: DateTime.Now.AddMinutes(30), finish: DateTime.Now.AddHours(40));
+        var activity = new BuildComponentActivity(id: Guid.NewGuid(), start: DateTime.Now, finish: DateTime.Now.AddDays(1));
+        var overlapping = new BuildMachineActivity(id: Guid.NewGuid(), start: DateTime.Now.AddMinutes(-30), finish: DateTime.Now.AddHours(40));
 
         // Then
         var result =
@@ -44,6 +44,17 @@ public class WorkerTests
         result.FailedActivity.Should().Be(activity);
     }
 
+    [Fact]
+    public void Null_Worker_Should_Not_Work_In_Activities()
+    {
+        var sut = Worker.Null;
+
+        var result = sut.WorksIn(new BuildMachineActivity(Guid.NewGuid(), DateTime.Today, DateTime.Now.AddHours(1)));
+
+        result.IsFailed.Should().BeTrue();
+        result.Error.Should().Be(DomainErrors.AddingActivityToNullWorker);
+    }
+
     [Theory]
     [MemberData(nameof(StatusGenerator))]
     public void Worker_Status_Should_Depend_On_Activities(Worker.Status expectedStatus, TimedActivity activity)
@@ -54,7 +65,7 @@ public class WorkerTests
 
         result.IsSuccess.Should().BeTrue();
 
-        var actual = result.Value as Worker;
+        var actual = (Worker)result.Value;
 
         actual.ActualStatus.Should().Be(expectedStatus);
     }
@@ -63,6 +74,6 @@ public class WorkerTests
     {
         yield return new object[] { Worker.Status.Working, new BuildComponentActivity(Guid.NewGuid(), DateTime.Now.AddSeconds(-1), DateTime.Now.AddSeconds(30)) };
         yield return new object[] { Worker.Status.Recharging, new BuildComponentActivity(Guid.NewGuid(), DateTime.Now.AddSeconds(-10), DateTime.Now.AddSeconds(-1)) };
-        yield return new object[] { Worker.Status.Idle, new BuildComponentActivity(Guid.NewGuid(), DateTime.Now.AddSeconds(-1), DateTime.Now.AddSeconds(30)) };
+        yield return new object[] { Worker.Status.Idle, new BuildComponentActivity(Guid.NewGuid(), DateTime.Now.AddDays(-1), DateTime.Now.AddHours(-5)) };
     }
 }

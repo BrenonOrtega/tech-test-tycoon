@@ -33,19 +33,43 @@ namespace TechTest.Ryanair.Tycoon.UnitTests.Domain.Entities.Activities
         [MemberData(nameof(TypeActivitiesGenerator))]
         public void Activity_Should_Tell_Its_Resting_Time(Type type)
         {
-            var activityType = Activator.CreateInstance(type, new object[] { Guid.NewGuid(), DateTime.Now, DateTime.Now.AddSeconds(1)}) as TimedActivity;
+            var sut = Activator.CreateInstance(type, new object[] { Guid.NewGuid(), DateTime.Now, DateTime.Now.AddSeconds(1)}) as TimedActivity;
 
-            activityType.FinishRestingDate.Should().BeMoreThan(TimeSpan.Zero);
+            sut.FinishRestingDate.Should().BeMoreThan(TimeSpan.Zero);
         }
 
         [Theory]
         [MemberData(nameof(TypeActivitiesGenerator))]
         public void Activity_Should_Tell_Its_Type(Type type)
         {
-            var activityType = Activator.CreateInstance(type, new object[] { Guid.NewGuid(), DateTime.Now, DateTime.Now.AddSeconds(1) }) as TimedActivity;
+            var sut = (TimedActivity)Activator.CreateInstance(type, new object[] { Guid.NewGuid(), DateTime.Now, DateTime.Now.AddSeconds(1) });
 
-            activityType.Type.Should().NotBe(String.Empty);
-            activityType.Type.Should().NotBeNull();
+            sut.Type.Should().NotBe(string.Empty);
+            sut.Type.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void Should_Not_Add_Workers_Who_Cannot_Work_In_Activity()
+        {
+            var worker = new Worker(Guid.NewGuid(), "B")
+                .WorksIn(new BuildMachineActivity(Guid.NewGuid(), DateTime.Today, DateTime.Now.AddHours(30)))
+                .Value;
+
+            var sut = new BuildComponentActivity(Guid.NewGuid(), DateTime.Now.AddHours(-1), DateTime.Now.AddMinutes(30));
+
+            sut.HaveParticipant(worker);
+        }
+
+        [Fact]
+        public void ActivityWorker_Working_In_Activity_Should_Take_Part_In_Activity()
+        {
+            var sut = new BuildMachineActivity(Guid.NewGuid(), DateTime.Today, DateTime.Now);
+
+            var worker = new Worker(Guid.NewGuid(), "A");
+
+            worker.WorksIn(sut);
+
+            sut.Workers.Should().Contain(worker.Id);
         }
 
         public static IEnumerable<object[]> TypeActivitiesGenerator() 
