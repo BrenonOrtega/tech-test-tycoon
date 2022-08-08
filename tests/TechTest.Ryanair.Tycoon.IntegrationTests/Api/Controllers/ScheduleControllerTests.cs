@@ -3,20 +3,23 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using System.Net;
 using TechTest.Ryanair.Tycoon.Api.Requests;
-using TechTest.Ryanair.Tycoon.Application.ScheduleActivity;
+using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.CreateWorker;
+using TechTest.Ryanair.Tycoon.IntegrationTests.Fixtures;
 
 namespace TechTest.Ryanair.Tycoon.IntegrationTests.Api.Controllers;
 
 public class ScheduleControllerTests
 {
     private readonly TestServer _testServer;
-    private readonly FlurlClient _client;
+    private readonly IFlurlClient _client;
 
     public ScheduleControllerTests()
     {
-        _testServer = new WebApplicationFactory<Program>().Server;
-        _client = new FlurlClient(_testServer.CreateClient());
+        var fixture = new TestServerFixture();
+        _testServer = fixture.Server;
+        _client = fixture.Client;
     }
+
     [Fact]
     public async Task Scheduling_Activity_For_Existing_Workers_Should_Be_Ok()
     {
