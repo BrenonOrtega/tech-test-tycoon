@@ -1,11 +1,12 @@
 using Awarean.Sdk.Result;
 using Microsoft.Extensions.Logging;
+using TechTest.Ryanair.Tycoon.Application.UseCase;
 using TechTest.Ryanair.Tycoon.Domain.Entities;
 using TechTest.Ryanair.Tycoon.Domain.Repositories;
 
 namespace TechTest.Ryanair.Tycoon.Application.ScheduleActivity;
 
-public class ScheduleActivityUseCase : IScheduleActivityUseCase
+public class ScheduleActivityUseCase : IScheduleActivityUseCase, IUseCase<ScheduleActivityCommand, ScheduledActivityResponse>
 {
     private readonly ILogger<ScheduleActivityUseCase> _logger;
     private readonly IUnitOfWork _unitOfWork;

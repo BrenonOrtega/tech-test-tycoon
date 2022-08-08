@@ -1,11 +1,12 @@
 ﻿using Awarean.Sdk.Result;
 using Microsoft.Extensions.Logging;
+using TechTest.Ryanair.Tycoon.Application.UseCase;
 using TechTest.Ryanair.Tycoon.Domain.Entities;
 using TechTest.Ryanair.Tycoon.Domain.Repositories;
 
 namespace TechTest.Ryanair.Tycoon.Application.CreateWorker
 {
-    public class CreateWorkerUseCase : ICreateWorkerUseCase
+    public class CreateWorkerUseCase : ICreateWorkerUseCase, IUseCase<CreateWorkerCommand, CreatedWorkerResponse>
     {
         private ILogger<CreateWorkerUseCase> _logger;
         private IUnitOfWork _unitOfWork;
