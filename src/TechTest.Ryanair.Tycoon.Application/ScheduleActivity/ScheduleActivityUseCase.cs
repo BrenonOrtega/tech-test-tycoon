@@ -1,5 +1,6 @@
 using Awarean.Sdk.Result;
 using Microsoft.Extensions.Logging;
+using TechTest.Ryanair.Tycoon.Domain.Entities;
 using TechTest.Ryanair.Tycoon.Domain.Repositories;
 
 namespace TechTest.Ryanair.Tycoon.Application.ScheduleActivity;
@@ -25,25 +26,35 @@ public class ScheduleActivityUseCase : IScheduleActivityUseCase
         if (workers.Any() is false)
             return Result.Fail<ScheduledActivityResponse>(ApplicationErrors.WorkerNotFound);
 
-        var tasks = new List<Task>();
+        return await ScheduleForWorkers(command.Activity, workers);
+    }
+
+    private async Task<Result<ScheduledActivityResponse>> ScheduleForWorkers(TimedActivity activity, IEnumerable<Worker> workers)
+    {
+        var tasks = new List<Func<Task>>();
         foreach (var worker in workers)
         {
-            var result = worker.WorksIn(command.Activity);
-            if(result.IsFailed)
+            var result = worker.WorksIn(activity);
+            if (result.IsFailed)
             {
                 _logger.LogInformation("Could not schedule activity {id} from {startDate} - {endDate}.\n Worker {id} {name} was actually {status}.",
-                    command.Activity.Id, command.Activity.Start, command.Activity.Finish, worker.Id, worker.Name, worker.ActualStatus);
+                    activity.Id, activity.Start, activity.Finish, worker.Id, worker.Name, worker.ActualStatus);
 
                 return Result.Fail<ScheduledActivityResponse>(result.Error);
             }
-            tasks.Add(_unitOfWork.WorkerRepository.UpdateAsync(worker.Id, worker));
+            tasks.Add(() => _unitOfWork.WorkerRepository.UpdateAsync(worker.Id, worker));
         }
 
-        tasks.Add(_unitOfWork.ActivityRepository.CreateAsync(command.Activity));
-        tasks.Add(_unitOfWork.SaveAsync());
+        await UpdateAll(activity, tasks);
 
-        await Task.WhenAll(tasks);
+        return Result.Success(new ScheduledActivityResponse() { ActivityId = activity.Id });
+    }
 
-        return Result.Success(new ScheduledActivityResponse() { ActivityId = command.Activity.Id });
+    private async Task UpdateAll(TimedActivity activity, List<Func<Task>> tasks)
+    {
+        tasks.Add(() => _unitOfWork.ActivityRepository.CreateAsync(activity));
+        tasks.Add(() => _unitOfWork.SaveAsync());
+
+        await Task.WhenAll(tasks.Select(x => x.Invoke()));
     }
 }

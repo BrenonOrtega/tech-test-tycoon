@@ -33,8 +33,7 @@ public class ScheduleActivityUseCaseTests
     }
 
     [Fact]
-    //[MemberData(nameof(OverlappingCommandsGenerator))]
-    public async Task Creating_Activity_That_Overlaps_Any_Worker_Should_Fail(/* ScheduleActivityCommand overlappingCommand */)
+    public async Task Creating_Activity_That_Overlaps_Any_Worker_Should_Fail()
     {
         // Given
         var sut = GetMockedUseCase();
@@ -54,6 +53,29 @@ public class ScheduleActivityUseCaseTests
         // Then
         result.IsFailed.Should().BeTrue();
         result.Error.Should().Be(DomainErrors.OverlappingActivities);
+    }
+
+    [Fact]
+    public async Task Creating_Activity_That_Workers_Can_Do_Should_Be_Success()
+    {
+        // Given
+        var sut = GetMockedUseCase();
+
+        var workers = new List<Worker>{ new(Guid.NewGuid(), "A"), new(Guid.NewGuid(), "B") };
+        var activity = new BuildComponentActivity(Guid.NewGuid(), new DateTime(2022, 08, 07), new DateTime(2022, 08, 08));
+        var otherActivity = new BuildMachineActivity(Guid.NewGuid(), activity.FinishRestingDate.AddSeconds(1), activity.FinishRestingDate.AddMinutes(30));
+        var command = new ScheduleActivityCommand(otherActivity, workers.Select(x => x.Id).ToArray());
+        
+        // Setup
+        workers.ForEach(worker => worker.WorksIn(activity));
+        unitOfWork.WorkerRepository.GetWorkersAsync(default).ReturnsForAnyArgs(workers);
+
+        // When
+        var result = await sut.HandleAsync(command);
+
+        // Then
+        result.IsSuccess.Should().BeTrue();
+        await unitOfWork.WorkerRepository.UpdateAsync(Arg.Any<Guid>(), Arg.Any<Worker>()).Received(2);
     }
 
     public static IEnumerable<object[]> OverlappingCommandsGenerator()
