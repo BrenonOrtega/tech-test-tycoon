@@ -22,7 +22,7 @@ public class CreateWorkerCommand : ICommand
             return Result.Fail("INVALID_ID", "An Invalid Guid was provided to the command");
         
         if(string.IsNullOrEmpty(Name))
-            return Result.Fail("INVALID_ID", "An Invalid Guid was provided to the command");
+            return Result.Fail("INVALID_NAME", "An Invalid name was provided to the command");
 
         return Result.Success();
     }

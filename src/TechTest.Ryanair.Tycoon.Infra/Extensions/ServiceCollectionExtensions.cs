@@ -12,6 +12,8 @@ public static class ServiceCollectionExtensions
         services.AddActivityRepository();
         services.AddWorkerRepository();
 
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+
         return services;
     }
 
