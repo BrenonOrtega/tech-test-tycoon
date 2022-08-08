@@ -1,7 +1,7 @@
 ﻿using Awarean.Sdk.Result;
 using Microsoft.Extensions.Logging;
 using TechTest.Ryanair.Tycoon.Application;
-using TechTest.Ryanair.Tycoon.Application.CreateWorker;
+using TechTest.Ryanair.Tycoon.Application.WorkerUseCases.CreateWorker;
 using TechTest.Ryanair.Tycoon.Domain.Entities;
 using TechTest.Ryanair.Tycoon.Domain.Repositories;
 

@@ -1,10 +1,8 @@
 ﻿using Awarean.Sdk.Result;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TechTest.Ryanair.Tycoon.Api.Requests;
 using TechTest.Ryanair.Tycoon.Application;
-using TechTest.Ryanair.Tycoon.Application.CreateWorker;
-using TechTest.Ryanair.Tycoon.Domain.Entities;
+using TechTest.Ryanair.Tycoon.Application.WorkerUseCases.CreateWorker;
 
 namespace TechTest.Ryanair.Tycoon.Api.Controllers;
 
@@ -17,7 +15,7 @@ public class WorkersController : ControllerBase
 
     public WorkersController(ILogger<WorkersController> logger, ICreateWorkerUseCase creator)
     {
-       _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _creator = creator ?? throw new ArgumentNullException(nameof(creator));
     }
 
@@ -34,7 +32,7 @@ public class WorkersController : ControllerBase
         if (result.IsFailed && result.Error == ApplicationErrors.InvalidCommand)
             return UnprocessableEntity(Error.Create("ERROR_PROCESSING_COMMAND", "One or more validation errors ocurred for the command."));
 
-        return CreatedAtAction(nameof(GetWorker), new {id = result.Value.Id }, result.Value);
+        return CreatedAtAction(nameof(GetWorker), new { id = result.Value.Id }, result.Value);
     }
 
     [HttpGet("{id:guid}")]

@@ -1,8 +1,7 @@
 using Awarean.Sdk.Result;
-using TechTest.Ryanair.Tycoon.Application.UseCase;
 using TechTest.Ryanair.Tycoon.Domain.Entities;
 
-namespace TechTest.Ryanair.Tycoon.Application.ScheduleActivity;
+namespace TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.CreateWorker;
 
 public class ScheduleActivityCommand : ICommand
 {

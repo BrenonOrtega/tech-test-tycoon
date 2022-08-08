@@ -1,6 +1,6 @@
 ﻿using Awarean.Sdk.Result;
 
-namespace TechTest.Ryanair.Tycoon.Application.CreateWorker;
+namespace TechTest.Ryanair.Tycoon.Application.WorkerUseCases.CreateWorker;
 
 public interface ICreateWorkerUseCase
 {

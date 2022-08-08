@@ -1,6 +1,6 @@
 ﻿using Awarean.Sdk.Result;
 
-namespace TechTest.Ryanair.Tycoon.Application.UseCase;
+namespace TechTest.Ryanair.Tycoon.Application;
 
 public interface IUseCase<in TCommand, TResponse>
 {

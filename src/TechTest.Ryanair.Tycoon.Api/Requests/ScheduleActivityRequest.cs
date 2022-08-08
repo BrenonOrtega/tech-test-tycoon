@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using TechTest.Ryanair.Tycoon.Application.ScheduleActivity;
+using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.CreateWorker;
 using TechTest.Ryanair.Tycoon.Domain.Entities;
 
 namespace TechTest.Ryanair.Tycoon.Api.Requests
