@@ -1,13 +1,10 @@
-using Awarean.Sdk.Result;
 using TechTest.Ryanair.Tycoon.Domain.Entities;
 
 namespace TechTest.Ryanair.Tycoon.Domain.Repositories
 {
-    public interface IWorkerRepository
+    public interface IWorkerRepository : IBaseRepository<Worker>
     {
-        Task<Worker> GetAsync(Guid id);
-        Task<Worker> GetByName(string name);
-        Task<Result> CreateAsync(Worker worker);
-        Task<Result> UpdateAsync(Guid id, Worker updated);
+        Task<Worker> GetByNameAsync(string name);
+        Task<IEnumerable<Worker>> GetWorkersAsync(IEnumerable<Guid> workerIds);
     }
 }
