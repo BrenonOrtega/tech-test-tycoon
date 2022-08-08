@@ -19,11 +19,15 @@ public class ScheduleActivityUseCase : IScheduleActivityUseCase, IUseCase<Schedu
 
     public async Task<Result<ScheduledActivityResponse>> HandleAsync(ScheduleActivityCommand command)
     {
-        if (command is null || command.Validate().IsFailed)
+        
+        if (command is null)
             return Result.Fail<ScheduledActivityResponse>(ApplicationErrors.InvalidCommand);
 
-        var workers = await _unitOfWork.WorkerRepository.GetWorkersAsync(command.AssignedWorkers);
+        var validation = command.Validate();
+        if (validation.IsFailed)
+            return Result.Fail<ScheduledActivityResponse>(validation.Error);
 
+        var workers = await _unitOfWork.WorkerRepository.GetWorkersAsync(command.AssignedWorkers);
         if (workers.Any() is false)
             return Result.Fail<ScheduledActivityResponse>(ApplicationErrors.WorkerNotFound);
 

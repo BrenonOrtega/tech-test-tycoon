@@ -91,13 +91,14 @@ public class ScheduleActivityUseCaseTests
     {
         //Given
         var sut = GetMockedUseCase();
+        var acceptedErrors = new[] { ApplicationErrors.InvalidScheduleActivityCommand, ApplicationErrors.InvalidCommand };
 
         // When
         var result = await sut.HandleAsync(invalidCommand);
 
         // Then 
         result.IsSuccess.Should().BeFalse();
-        result.Error.Should().Be(ApplicationErrors.InvalidCommand);
+        acceptedErrors.Should().Contain(result.Error);
     }
 
     private IScheduleActivityUseCase GetMockedUseCase()
@@ -120,7 +121,9 @@ public class ScheduleActivityUseCaseTests
     public static IEnumerable<object[]> InvalidCommandGenerator()
     {
         yield return new object[] { null };
+        yield return new object[] { new ScheduleActivityCommand(new BuildComponentActivity(Guid.NewGuid(), DateTime.Today.AddDays(-1), DateTime.Now.AddHours(1)), null) };
         yield return new object[] { new ScheduleActivityCommand(new BuildComponentActivity(Guid.NewGuid(), DateTime.Today.AddDays(-1), DateTime.Now.AddHours(1)), Guid.Empty) };
         yield return new object[] { new ScheduleActivityCommand(null, Guid.NewGuid()) };
+        yield return new object[] { new ScheduleActivityCommand(TimedActivity.Null, Guid.NewGuid()) };
     }
 }

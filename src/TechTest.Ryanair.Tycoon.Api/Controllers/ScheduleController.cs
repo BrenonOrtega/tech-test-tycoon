@@ -17,11 +17,23 @@ public class ScheduleController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Schedule(ScheduleActivityRequest request)
+    public async Task<IActionResult> Schedule([FromBody]ScheduleActivityRequest request)
     {
         if (request is null)
             return BadRequest();
 
         var command = request.ToCommand();
+
+        var result = await _scheduler.HandleAsync(command);
+
+        if(result.IsFailed)
+        {
+            _logger.LogInformation("Failed scheduling activity of Type {type}, starting {startDate} - ending {endData} for workers {workers}",
+                request.Type, request.StartDate, request.FinishDate, string.Join(',', request.Workers ?? new()));
+
+            return BadRequest(result.Error);
+        }
+
+        return Ok(result.Value);
     }
 }
