@@ -1,7 +1,10 @@
-﻿using Flurl.Http;
+﻿using Awarean.Sdk.Result;
+using Flurl.Http;
 using System.Net;
 using TechTest.Ryanair.Tycoon.Api.Requests;
+using TechTest.Ryanair.Tycoon.Application;
 using TechTest.Ryanair.Tycoon.Application.WorkerUseCases.CreateWorker;
+using TechTest.Ryanair.Tycoon.Application.WorkerUseCases.GetWorkerById;
 using TechTest.Ryanair.Tycoon.Domain.Entities;
 using TechTest.Ryanair.Tycoon.IntegrationTests.Fixtures;
 
@@ -29,14 +32,36 @@ namespace TechTest.Ryanair.Tycoon.IntegrationTests.Api.Controllers
             // When 
             var response = await _fixture.Client
                 .Request($"/api/workers/{id}")
+                .WithHeader("Content-Type", "application/json")
                 .AllowAnyHttpStatus()
-                .GetJsonAsync();
+                .GetAsync();
 
-            var actual = await response.GetJsonAsync<Worker>();
+            var actual = await response.GetJsonAsync<FoundWorkerResponse>();
             response.StatusCode.Should().Be((int)HttpStatusCode.OK);
             actual.Should().NotBeNull();
             actual.Should().NotBe(Worker.Null);
             actual.Name.Should().Be(request.Name);
+            actual.Status.Should().Be(Worker.Status.Idle);
+            actual.Activities.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task Getting_Inexistent_Worker_Should_Fail()
+        {
+            // Given
+            var inexistentId = Guid.NewGuid();
+
+            // When 
+            var response = await _fixture.Client
+                .Request($"/api/workers/{inexistentId}")
+                .AllowAnyHttpStatus()
+                .GetAsync();
+
+            var actual = await response.GetJsonAsync<Error>();
+            
+            response.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
+            actual.Should().NotBe(Error.Empty);
+            actual.Should().Be(ApplicationErrors.WorkerNotFound);
         }
     }
 }
