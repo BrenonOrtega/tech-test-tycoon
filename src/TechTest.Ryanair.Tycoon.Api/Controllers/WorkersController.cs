@@ -1,5 +1,6 @@
 ﻿using Awarean.Sdk.Result;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using TechTest.Ryanair.Tycoon.Api.Requests;
 using TechTest.Ryanair.Tycoon.Application;
 using TechTest.Ryanair.Tycoon.Application.WorkerUseCases.CreateWorker;
@@ -23,6 +24,9 @@ public class WorkersController : ControllerBase
     }
 
     [HttpPost]
+    [ProducesResponseType((int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.UnprocessableEntity)]
     public async Task<IActionResult> CreateWorker(CreateWorkerRequest request)
     {
         if (request is null)
@@ -39,6 +43,8 @@ public class WorkersController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<IActionResult> GetWorker([FromRoute]GetWorkerByIdRequest request)
     {
         var result = await _getById.HandleAsync(request.ToCommand());

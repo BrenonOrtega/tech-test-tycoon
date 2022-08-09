@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+﻿using System.ComponentModel.DataAnnotations;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity;
 using TechTest.Ryanair.Tycoon.Domain.Entities;
 
@@ -6,9 +6,13 @@ namespace TechTest.Ryanair.Tycoon.Api.Requests
 {
     public class ScheduleActivityRequest
     {
+        [Required]
         public string Type { get; set; }
+        [Required]
         public DateTime FinishDate { get; set; }
+        [Required]
         public DateTime StartDate { get; set; }
+        [Required]
         public List<string> Workers { get; set; }
         public Guid? Id { get; set; }
 
@@ -22,6 +26,7 @@ namespace TechTest.Ryanair.Tycoon.Api.Requests
             return Workers.Select(x => Guid.TryParse(x, out var guid) ? guid : Guid.Empty).ToArray();
         }
 
+        // Code Smell, Should Remove it to use case or an Service for API to construct components.
         private TimedActivity CreateActivity()
         {
             var id = Id ?? Guid.NewGuid();
