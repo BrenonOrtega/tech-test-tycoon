@@ -8,6 +8,6 @@ namespace TechTest.Ryanair.Tycoon.Domain.Entities
 
         public override TimeSpan RestTime => TimeSpan.FromHours(2);
 
-        public override string Type => "Build Component Activity";
+        public override string Type => "COMPONENT";
     }
 }

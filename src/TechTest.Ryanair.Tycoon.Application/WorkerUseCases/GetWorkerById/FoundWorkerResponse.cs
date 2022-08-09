@@ -16,6 +16,8 @@ public class FoundWorkerResponse
     {
     }
 
+    internal FoundWorkerResponse() { }
+
     public Guid Id { get; }
     public string Name { get; }
     public Worker.Status Status { get; }

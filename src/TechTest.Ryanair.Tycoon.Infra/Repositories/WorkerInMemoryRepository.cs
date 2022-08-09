@@ -14,6 +14,8 @@ namespace TechTest.Ryanair.Tycoon.Infra.Repositories
         private readonly Dictionary<Guid, Worker> _workers;
         protected override Dictionary<Guid, Worker> Data => _workers;
 
+        public override Worker NullEntity => Worker.Null;
+
         public async Task<Worker> GetByNameAsync(string name)
         {
             if (string.IsNullOrEmpty(name))

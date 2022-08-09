@@ -23,7 +23,6 @@ namespace TechTest.Ryanair.Tycoon.IntegrationTests.Api.Controllers
 
             var created = await _fixture.Client
                 .Request("/api/workers")
-                .AllowAnyHttpStatus()
                 .PostJsonAsync(request)
                 .ReceiveJson<CreatedWorkerResponse>();
 
@@ -36,13 +35,14 @@ namespace TechTest.Ryanair.Tycoon.IntegrationTests.Api.Controllers
                 .AllowAnyHttpStatus()
                 .GetAsync();
 
-            var actual = await response.GetJsonAsync<FoundWorkerResponse>();
+            var actual = await response.GetJsonAsync();
+            
             response.StatusCode.Should().Be((int)HttpStatusCode.OK);
-            actual.Should().NotBeNull();
-            actual.Should().NotBe(Worker.Null);
-            actual.Name.Should().Be(request.Name);
-            actual.Status.Should().Be(Worker.Status.Idle);
-            actual.Activities.Should().BeEmpty();
+           
+            // dynamic objects doesn't work with fluent assertions or typed assertions.
+            Assert.True(id.ToString().Equals(actual.id.ToString()));
+            Assert.True(request.Name.Equals(actual.name));
+            Assert.True(Worker.Status.Idle.ToString().Equals(actual.status.ToString()));
         }
 
         [Fact]
@@ -57,11 +57,12 @@ namespace TechTest.Ryanair.Tycoon.IntegrationTests.Api.Controllers
                 .AllowAnyHttpStatus()
                 .GetAsync();
 
-            var actual = await response.GetJsonAsync<Error>();
+            var actual = await response.GetJsonAsync();
             
+            // Then
             response.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
-            actual.Should().NotBe(Error.Empty);
-            actual.Should().Be(ApplicationErrors.WorkerNotFound);
+            Assert.Equal(ApplicationErrors.WorkerNotFound.Code, actual.code.ToString());
+            Assert.Equal(ApplicationErrors.WorkerNotFound.Message, actual.message.ToString());
         }
     }
 }

@@ -8,5 +8,5 @@ public class BuildMachineActivity : TimedActivity
 
     public override TimeSpan RestTime => TimeSpan.FromHours(4);
 
-    public override string Type => "Build Machine Activity";
+    public override string Type => "MACHINE";
 }

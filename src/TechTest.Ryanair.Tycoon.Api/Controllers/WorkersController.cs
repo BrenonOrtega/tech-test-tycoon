@@ -38,8 +38,8 @@ public class WorkersController : ControllerBase
         return CreatedAtAction(nameof(GetWorker), new { id = result.Value.Id }, result.Value);
     }
 
-    [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetWorker(GetWorkerByIdRequest request)
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetWorker([FromRoute]GetWorkerByIdRequest request)
     {
         var result = await _getById.HandleAsync(request.ToCommand());
 

@@ -18,7 +18,6 @@ public class ScheduleActivityUseCase : IScheduleActivityUseCase, IUseCase<Schedu
 
     public async Task<Result<ScheduledActivityResponse>> HandleAsync(ScheduleActivityCommand command)
     {
-        
         if (command is null)
             return Result.Fail<ScheduledActivityResponse>(ApplicationErrors.InvalidCommand);
 

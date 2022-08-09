@@ -13,4 +13,6 @@ internal class TimedActivityInMemoryRepository : BaseInMemoryRepository<TimedAct
 
     private readonly Dictionary<Guid, TimedActivity> _activities = new();
     protected override Dictionary<Guid, TimedActivity> Data => _activities;
+
+    public override TimedActivity NullEntity => TimedActivity.Null;
 }

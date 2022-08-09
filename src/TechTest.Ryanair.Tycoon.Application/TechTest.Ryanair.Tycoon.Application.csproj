@@ -17,6 +17,7 @@
 	<ItemGroup>
 		<InternalsVisibleTo Include="TechTest.Ryanair.Tycoon.UnitTests" />
 		<InternalsVisibleTo Include="TechTest.Ryanair.Tycoon.IntegrationTests" />
+		<InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
 	</ItemGroup>
 
 </Project>

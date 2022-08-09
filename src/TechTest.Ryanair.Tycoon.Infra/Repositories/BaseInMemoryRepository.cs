@@ -1,6 +1,6 @@
-﻿using System.Text.Json;
-using Awarean.Sdk.Result;
+﻿using Awarean.Sdk.Result;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 using TechTest.Ryanair.Tycoon.Domain.Repositories;
 
 namespace TechTest.Ryanair.Tycoon.Infra.Repositories;
@@ -10,6 +10,7 @@ public abstract class BaseInMemoryRepository<TEntity, TLogger> : IBaseRepository
     private readonly string entityType = typeof(TEntity).Name;
     protected readonly ILogger<TLogger> _logger;
     protected abstract Dictionary<Guid, TEntity> Data { get; }
+    public abstract TEntity NullEntity { get; }
 
     public BaseInMemoryRepository(ILogger<TLogger> logger)
     {
@@ -19,12 +20,10 @@ public abstract class BaseInMemoryRepository<TEntity, TLogger> : IBaseRepository
     public async Task<TEntity> GetAsync(Guid id)
     {
         if (Data.TryGetValue(id, out var entity))
-        {
-            _logger.LogInformation("Not found any record of type {type} with id {id}", entityType, id);
             return entity;
-        }
 
-        return default;
+        _logger.LogInformation("Not found any record of type {type} with id {id}", entityType, id);
+        return NullEntity;
     }
 
     public async Task<Result> CreateAsync(TEntity entity)
@@ -44,7 +43,7 @@ public abstract class BaseInMemoryRepository<TEntity, TLogger> : IBaseRepository
 
         _logger.LogInformation("Saving new {type} record for id {id} with data: {data}", entityType, id, JsonSerializer.Serialize(entity));
         Data.Add((Guid)id, entity);
-        
+
         return Result.Success();
     }
 
