@@ -63,13 +63,13 @@ public class ScheduleActivityUseCaseTests
     {
         // Given
         var sut = GetMockedUseCase();
-                
+
         var activity = new BuildComponentActivity(Guid.NewGuid(), new DateTime(2022, 08, 07), new DateTime(2022, 08, 08));
         var overlaping = new BuildMachineActivity(Guid.NewGuid(), new DateTime(2022, 08, 07, 10, 15, 00), new DateTime(2022, 08, 07, 11, 15, 00));
         var command = new ScheduleActivityCommand(overlaping, workers.Select(x => x.Id).ToArray());
-        
+
         // Setup
-        foreach (var index in workersIndex) 
+        foreach (var index in workersIndex)
             workers[index].WorksIn(activity);
         unitOfWork.WorkerRepository.GetWorkersAsync(default).ReturnsForAnyArgs(workers);
 
@@ -109,7 +109,7 @@ public class ScheduleActivityUseCaseTests
 
         //Given
         var command = new ScheduleActivityCommand(
-            new BuildComponentActivity(Guid.NewGuid(), DateTime.Today.AddDays(-1),DateTime.Now.AddHours(1)),
+            new BuildComponentActivity(Guid.NewGuid(), DateTime.Today.AddDays(-1), DateTime.Now.AddHours(1)),
             worker.Id, workerTwo.Id);
 
         unitOfWork.WorkerRepository.GetWorkersAsync(Arg.Any<IEnumerable<Guid>>()).Returns(new List<Worker>() { worker, workerTwo });

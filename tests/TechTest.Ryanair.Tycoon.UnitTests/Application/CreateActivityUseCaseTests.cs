@@ -21,8 +21,8 @@ public class CreateActivityUseCaseTests
         var factory = new ActivityFactory();
         var sut = (ICreateActivityUseCase)new CreateActivityUseCase(logger, repo, factory);
         var command = new CreateActivityCommand(
-            id: Guid.NewGuid(), 
-            activityType: activityType,  
+            id: Guid.NewGuid(),
+            activityType: activityType,
             startDate: DateTime.Today,
             finishDate: DateTime.Today.AddDays(1));
 

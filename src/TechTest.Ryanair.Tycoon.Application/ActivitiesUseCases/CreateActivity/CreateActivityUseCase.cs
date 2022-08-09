@@ -36,14 +36,14 @@ internal class CreateActivityUseCase : ICreateActivityUseCase
         var newActivity = _factory.FromCreateCommand(command);
         var result = await _activities.CreateAsync(newActivity);
 
-        if(result.IsFailed)
+        if (result.IsFailed)
             return Result.Fail<CreatedActivityResponse>(result.Error);
 
         return Result.Success(
-            new CreatedActivityResponse(newActivity.Id, 
-                                        newActivity.Start, 
-                                        newActivity.Finish, 
-                                        newActivity.RestPeriod.ToString(),  
+            new CreatedActivityResponse(newActivity.Id,
+                                        newActivity.Start,
+                                        newActivity.Finish,
+                                        newActivity.RestPeriod.ToString(),
                                         newActivity.Type)
         );
     }

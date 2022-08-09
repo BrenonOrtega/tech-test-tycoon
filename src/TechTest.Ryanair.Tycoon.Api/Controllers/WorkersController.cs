@@ -45,7 +45,7 @@ public class WorkersController : ControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<IActionResult> GetWorker([FromRoute]GetWorkerByIdRequest request)
+    public async Task<IActionResult> GetWorker([FromRoute] GetWorkerByIdRequest request)
     {
         var result = await _getById.HandleAsync(request.ToCommand());
 

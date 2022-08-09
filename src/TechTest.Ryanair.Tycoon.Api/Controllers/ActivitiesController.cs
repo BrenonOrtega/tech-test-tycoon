@@ -17,7 +17,7 @@ public class ActivitiesController : ControllerBase
     private readonly ICreateActivityUseCase _createActivity;
     private readonly IGetActivityByIdUseCase _getById;
 
-    public ActivitiesController(ILogger<ActivitiesController> logger, IScheduleActivityUseCase scheduler, 
+    public ActivitiesController(ILogger<ActivitiesController> logger, IScheduleActivityUseCase scheduler,
         ICreateActivityUseCase createActivity, IGetActivityByIdUseCase getById)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -29,7 +29,7 @@ public class ActivitiesController : ControllerBase
     [HttpPost("schedule")]
     [ProducesResponseType((int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> Schedule([FromBody]ScheduleActivityRequest request)
+    public async Task<IActionResult> Schedule([FromBody] ScheduleActivityRequest request)
     {
         if (request is null)
             return BadRequest();
@@ -38,7 +38,7 @@ public class ActivitiesController : ControllerBase
 
         var result = await _scheduler.HandleAsync(command);
 
-        if(result.IsFailed)
+        if (result.IsFailed)
         {
             _logger.LogInformation("Failed scheduling activity of Type {type}, starting {startDate} - ending {endData} for workers {workers}.\nError: {error}.",
                 request.Type, request.StartDate, request.FinishDate, string.Join(',', request.Workers ?? new()), JsonSerializer.Serialize(result.Error));
@@ -73,7 +73,7 @@ public class ActivitiesController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    [ProducesResponseType((int)HttpStatusCode.OK, Type=typeof(FoundActivityResponse))]
+    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(FoundActivityResponse))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<IActionResult> Get([FromRoute] GetActivityByIdRequest request)
     {
@@ -85,7 +85,7 @@ public class ActivitiesController : ControllerBase
 
         if (result.IsFailed && result.Error == ApplicationErrors.ActivityNotFound)
             return NotFound(result.Error);
-        
+
         if (result.IsFailed)
             return BadRequest(result.Error);
 

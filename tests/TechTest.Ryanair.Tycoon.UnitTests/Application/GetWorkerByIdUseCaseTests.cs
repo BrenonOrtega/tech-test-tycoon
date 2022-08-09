@@ -1,9 +1,9 @@
-﻿using TechTest.Ryanair.Tycoon.Domain.Repositories;
+﻿using Microsoft.Extensions.Logging;
+using TechTest.Ryanair.Tycoon.Application;
 using TechTest.Ryanair.Tycoon.Application.WorkerUseCases.GetWorkerById;
 using TechTest.Ryanair.Tycoon.Domain.Entities;
+using TechTest.Ryanair.Tycoon.Domain.Repositories;
 using TechTest.Ryanair.Tycoon.Infra.Repositories;
-using Microsoft.Extensions.Logging;
-using TechTest.Ryanair.Tycoon.Application;
 
 namespace TechTest.Ryanair.Tycoon.UnitTests.Application;
 
@@ -23,7 +23,7 @@ public class GetWorkerByIdUseCaseTests
         var result = await sut.HandleAsync(command);
 
         result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEquivalentTo(expected, 
+        result.Value.Should().BeEquivalentTo(expected,
             config => config.WithMapping<FoundWorkerResponse>(c => c.ActualStatus, e => e.Status));
     }
 

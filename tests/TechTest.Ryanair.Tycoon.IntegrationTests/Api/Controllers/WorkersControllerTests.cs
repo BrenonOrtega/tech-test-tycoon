@@ -1,10 +1,8 @@
-﻿using Awarean.Sdk.Result;
-using Flurl.Http;
+﻿using Flurl.Http;
 using System.Net;
 using TechTest.Ryanair.Tycoon.Api.Requests;
 using TechTest.Ryanair.Tycoon.Application;
 using TechTest.Ryanair.Tycoon.Application.WorkerUseCases.CreateWorker;
-using TechTest.Ryanair.Tycoon.Application.WorkerUseCases.GetWorkerById;
 using TechTest.Ryanair.Tycoon.Domain.Entities;
 using TechTest.Ryanair.Tycoon.IntegrationTests.Fixtures;
 
@@ -36,9 +34,9 @@ namespace TechTest.Ryanair.Tycoon.IntegrationTests.Api.Controllers
                 .GetAsync();
 
             var actual = await response.GetJsonAsync();
-            
+
             response.StatusCode.Should().Be((int)HttpStatusCode.OK);
-           
+
             // dynamic objects doesn't work with fluent assertions or typed assertions.
             Assert.True(id.ToString().Equals(actual.id.ToString()));
             Assert.True(request.Name.Equals(actual.name));
@@ -58,7 +56,7 @@ namespace TechTest.Ryanair.Tycoon.IntegrationTests.Api.Controllers
                 .GetAsync();
 
             var actual = await response.GetJsonAsync();
-            
+
             // Then
             response.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
             Assert.Equal(ApplicationErrors.WorkerNotFound.Code, actual.code.ToString());

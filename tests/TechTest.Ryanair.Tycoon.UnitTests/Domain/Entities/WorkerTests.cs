@@ -9,7 +9,7 @@ public class WorkerTests
     [MemberData(nameof(InvalidActivityGenerator))]
     public void Invalid_Activities_Should_Be_Invalid(TimedActivity invalidActivity)
     {
-          // Given
+        // Given
         var sut = new Worker(name: "A", id: Guid.NewGuid());
 
         // When
@@ -21,7 +21,7 @@ public class WorkerTests
         result.FailedActivity.Should().Be(TimedActivity.Null);
     }
 
-   [Fact]
+    [Fact]
     public void Adding_An_Activity_Should_Validate_Overlaps()
     {
         // Given

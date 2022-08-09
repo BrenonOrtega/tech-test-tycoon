@@ -24,7 +24,7 @@ internal class GetWorkerByIdUseCase : IGetWorkerByIdUseCase
 
         var queried = await _workers.GetAsync(command.Id);
 
-        if(queried == Worker.Null)
+        if (queried == Worker.Null)
             return Result.Fail<FoundWorkerResponse>(ApplicationErrors.WorkerNotFound);
 
         return Result.Success(new FoundWorkerResponse(queried));

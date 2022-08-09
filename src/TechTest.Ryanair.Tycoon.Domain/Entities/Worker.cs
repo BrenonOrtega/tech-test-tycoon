@@ -9,7 +9,7 @@ public class Worker : IActivityWorker
     public string Name { get; private set; }
 
     private readonly HashSet<TimedActivity> _activities = new();
-    public ImmutableHashSet<TimedActivity> Activities => _activities.ToImmutableHashSet(); 
+    public ImmutableHashSet<TimedActivity> Activities => _activities.ToImmutableHashSet();
 
     public Status ActualStatus
     {
@@ -43,15 +43,15 @@ public class Worker : IActivityWorker
         if (_activities.Contains(activity))
             return new WorksInResult(DomainErrors.AlreadyWorksInActivity, activity);
 
-        if(_activities.Any(act => act.Overlaps(activity)))
+        if (_activities.Any(act => act.Overlaps(activity)))
             return new WorksInResult(DomainErrors.OverlappingActivities, activity);
 
         _activities.Add(activity);
         var result = activity.HaveParticipant(this);
-        
-        if(result.IsFailed)
+
+        if (result.IsFailed)
             return new WorksInResult(result.Error, activity);
-            
+
         return new WorksInResult(this);
     }
 

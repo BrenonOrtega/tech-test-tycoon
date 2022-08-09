@@ -19,9 +19,9 @@ public class ScheduleActivityCommand : ICommand
         var validArray = AssignedWorkers is not null;
         var AllValidGuids = validArray && Array.TrueForAll(AssignedWorkers, workerId => workerId != Guid.Empty);
         var validActivity = Activity is not null && Activity != TimedActivity.Null;
-            
+
         return validArray && AllValidGuids && validActivity
             ? Result.Success()
             : Result.Fail(ApplicationErrors.InvalidScheduleActivityCommand);
-     }
+    }
 }

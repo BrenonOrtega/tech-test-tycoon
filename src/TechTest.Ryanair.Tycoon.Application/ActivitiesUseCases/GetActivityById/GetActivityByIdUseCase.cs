@@ -21,14 +21,14 @@ internal class GetActivityByIdUseCase : IGetActivityByIdUseCase
 
         var validation = command.Validate();
 
-        if(validation.IsFailed)
+        if (validation.IsFailed)
             return Result.Fail<FoundActivityResponse>(validation.Error);
 
         var queriedActivity = await _repo.GetAsync(command.Id);
 
         if (queriedActivity == TimedActivity.Null)
             return Result.Fail<FoundActivityResponse>(ApplicationErrors.ActivityNotFound);
-        
+
         var dto = ActivityDto.FromEntity(queriedActivity);
         return Result.Success(new FoundActivityResponse(dto));
     }

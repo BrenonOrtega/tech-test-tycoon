@@ -1,6 +1,5 @@
 
 using Awarean.Sdk.Result;
-using System;
 using System.Collections.Immutable;
 
 namespace TechTest.Ryanair.Tycoon.Domain.Entities
@@ -73,9 +72,9 @@ namespace TechTest.Ryanair.Tycoon.Domain.Entities
         public override int GetHashCode()
         {
             return Id.GetHashCode()
-                + Start.GetHashCode() 
-                + Finish.GetHashCode() 
-                + FinishRestingDate.GetHashCode() 
+                + Start.GetHashCode()
+                + Finish.GetHashCode()
+                + FinishRestingDate.GetHashCode()
                 + RestPeriod.GetHashCode();
         }
 

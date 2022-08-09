@@ -33,7 +33,7 @@ namespace TechTest.Ryanair.Tycoon.UnitTests.Domain.Entities.Activities
         [MemberData(nameof(TypeActivitiesGenerator))]
         public void Activity_Should_Tell_Its_Resting_Time(Type type)
         {
-            var sut = Activator.CreateInstance(type, new object[] { Guid.NewGuid(), DateTime.Now, DateTime.Now.AddSeconds(1)}) as TimedActivity;
+            var sut = Activator.CreateInstance(type, new object[] { Guid.NewGuid(), DateTime.Now, DateTime.Now.AddSeconds(1) }) as TimedActivity;
 
             sut.FinishRestingDate.Should().BeMoreThan(TimeSpan.Zero);
         }
@@ -72,7 +72,7 @@ namespace TechTest.Ryanair.Tycoon.UnitTests.Domain.Entities.Activities
             sut.Workers.Should().Contain(worker.Id);
         }
 
-        public static IEnumerable<object[]> TypeActivitiesGenerator() 
+        public static IEnumerable<object[]> TypeActivitiesGenerator()
             => typeof(TimedActivity).Assembly
                 .GetTypes()
                 .Where(x => x.IsSubclassOf(typeof(TimedActivity)) && x.GetConstructor(new[] { typeof(Guid), typeof(DateTime), typeof(DateTime) }) is not null)

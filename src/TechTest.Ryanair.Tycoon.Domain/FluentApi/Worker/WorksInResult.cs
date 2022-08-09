@@ -13,9 +13,9 @@ public class WorksInResult : Result<Worker>, IActivityWorker
 
     public WorksInResult WorksIn(TimedActivity activity)
     {
-        if(IsFailed)
+        if (IsFailed)
             return this;
-        
+
         return Value.WorksIn(activity);
     }
 }

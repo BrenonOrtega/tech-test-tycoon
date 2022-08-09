@@ -4,14 +4,14 @@ namespace TechTest.Ryanair.Tycoon.Application.WorkerUseCases.GetWorkerById;
 
 public class FoundWorkerResponse
 {
-    private FoundWorkerResponse(Guid id, string name, Worker.Status status, IEnumerable<TimedActivity> activities) 
+    private FoundWorkerResponse(Guid id, string name, Worker.Status status, IEnumerable<TimedActivity> activities)
     {
         Id = id;
         Name = name;
         Status = status;
         Activities = activities;
     }
-    public FoundWorkerResponse(Worker queried) 
+    public FoundWorkerResponse(Worker queried)
         : this(queried.Id, queried.Name, queried.ActualStatus, queried.Activities)
     {
     }
