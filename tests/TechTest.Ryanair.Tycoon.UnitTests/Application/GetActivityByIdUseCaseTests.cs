@@ -24,9 +24,15 @@ namespace TechTest.Ryanair.Tycoon.UnitTests.Application
             repo.GetAsync(Arg.Is(request.Id)).Returns(activity);
 
             var result = await sut.HandleAsync(request);
+            var dto = result.Value.Activity;
 
             result.IsSuccess.Should().BeTrue();
-            result.Value.Activity.Should().Be(activity);
+            dto.Id.Should().Be(activity.Id);
+            dto.Start.Should().Be(activity.Start);
+            dto.Finish.Should().Be(activity.Finish);
+            dto.Rest.Should().Be(activity.RestPeriod);
+            dto.Workers.Should().HaveSameCount(activity.Workers);
+            dto.Type.Should().Be(activity.Type);
         }
 
         [Fact]

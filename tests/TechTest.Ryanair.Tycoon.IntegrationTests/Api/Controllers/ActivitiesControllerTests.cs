@@ -74,10 +74,11 @@ public class ActivitiesControllerTests
         var actual = await _client.Request("/api/activities/schedule")
             .AllowAnyHttpStatus()
             .PostJsonAsync(schedule);
-        var content = await actual.GetJsonAsync<Error>();
+        var error = await actual.GetJsonAsync();
 
         actual.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-        content.Should().BeEquivalentTo(DomainErrors.InvalidActivityAssignment);
+        Assert.Equal(error.code.ToString(), DomainErrors.InvalidActivityAssignment.Code);
+        Assert.Equal(error.message.ToString(), DomainErrors.InvalidActivityAssignment.Message);
     }
 
     [Theory]
