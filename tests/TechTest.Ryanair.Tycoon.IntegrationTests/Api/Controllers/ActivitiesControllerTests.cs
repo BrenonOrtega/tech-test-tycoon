@@ -1,9 +1,7 @@
-﻿using Awarean.Sdk.Result;
-using Flurl.Http;
+﻿using Flurl.Http;
 using Microsoft.AspNetCore.TestHost;
 using System.Net;
 using TechTest.Ryanair.Tycoon.Api.Requests;
-using TechTest.Ryanair.Tycoon.Application;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.CreateActivity;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.GetActivityById;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity;
@@ -55,10 +53,10 @@ public class ActivitiesControllerTests
     {
         var request = new CreateWorkerRequest() { Name = "A" };
         var otherRequest = new CreateWorkerRequest() { Name = "B" };
-        
+
         var response = await _client.Request("/api/workers").AllowAnyHttpStatus().PostJsonAsync(request).ReceiveJson();
         var otherResponse = await _client.Request("/api/workers").AllowAnyHttpStatus().PostJsonAsync(otherRequest).ReceiveJson();
-        
+
         var id = response.id;
         var otherId = otherResponse.id;
 
