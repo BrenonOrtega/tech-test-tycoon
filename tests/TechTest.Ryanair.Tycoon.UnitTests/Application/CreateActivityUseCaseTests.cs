@@ -37,7 +37,7 @@ public class CreateActivityUseCaseTests
         result.Value.StartDate.Should().Be(command.StartDate);
         result.Value.FinishDate.Should().Be(command.FinishDate);
         result.Value.Type.Should().NotBeNull().And.NotBe(string.Empty);
-        result.Value.RestTime.Should().NotBeNull().And.NotBe(string.Empty);
+        result.Value.RestPeriod.Should().NotBeNull().And.NotBe(string.Empty);
     }
 
     [Theory]

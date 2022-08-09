@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Text.Json;
 using TechTest.Ryanair.Tycoon.Api.Requests;
+using TechTest.Ryanair.Tycoon.Application;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.CreateActivity;
+using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.GetActivityById;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity;
 
 namespace TechTest.Ryanair.Tycoon.Api.Controllers;
@@ -13,12 +15,15 @@ public class ActivitiesController : ControllerBase
     private readonly ILogger<ActivitiesController> _logger;
     private readonly IScheduleActivityUseCase _scheduler;
     private readonly ICreateActivityUseCase _createActivity;
+    private readonly IGetActivityByIdUseCase _getById;
 
-    public ActivitiesController(ILogger<ActivitiesController> logger, IScheduleActivityUseCase scheduler, ICreateActivityUseCase createActivity)
+    public ActivitiesController(ILogger<ActivitiesController> logger, IScheduleActivityUseCase scheduler, 
+        ICreateActivityUseCase createActivity, IGetActivityByIdUseCase getById)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _scheduler = scheduler ?? throw new ArgumentNullException(nameof(scheduler));
         _createActivity = createActivity ?? throw new ArgumentNullException(nameof(createActivity));
+        _getById = getById ?? throw new ArgumentNullException(nameof(getById));
     }
 
     [HttpPost("schedule")]
@@ -68,7 +73,22 @@ public class ActivitiesController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> Get([FromRoute]GetActivityByIdRequest request) => throw new NotImplementedException();
+    [ProducesResponseType((int)HttpStatusCode.OK, Type=typeof(FoundActivityResponse))]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    public async Task<IActionResult> Get([FromRoute] GetActivityByIdRequest request)
+    {
+        if (request is null)
+            return BadRequest();
 
+        var command = request.ToCommand();
+        var result = await _getById.HandleAsync(command);
 
+        if (result.IsFailed && result.Error == ApplicationErrors.ActivityNotFound)
+            return NotFound(result.Error);
+        
+        if (result.IsFailed)
+            return BadRequest(result.Error);
+
+        return Ok(result.Value);
+    }
 }

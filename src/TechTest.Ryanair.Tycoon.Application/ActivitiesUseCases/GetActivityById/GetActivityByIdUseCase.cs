@@ -1,4 +1,5 @@
 ﻿using Awarean.Sdk.Result;
+using TechTest.Ryanair.Tycoon.Application.Dtos;
 using TechTest.Ryanair.Tycoon.Domain.Entities;
 using TechTest.Ryanair.Tycoon.Domain.Repositories;
 
@@ -27,7 +28,8 @@ internal class GetActivityByIdUseCase : IGetActivityByIdUseCase
 
         if (queriedActivity == TimedActivity.Null)
             return Result.Fail<FoundActivityResponse>(ApplicationErrors.ActivityNotFound);
-
-        return Result.Success(new FoundActivityResponse(queriedActivity));
+        
+        var dto = ActivityDto.FromEntity(queriedActivity);
+        return Result.Success(new FoundActivityResponse(dto));
     }
 }

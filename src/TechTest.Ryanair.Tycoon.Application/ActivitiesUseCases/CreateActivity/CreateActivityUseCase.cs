@@ -43,7 +43,7 @@ internal class CreateActivityUseCase : ICreateActivityUseCase
             new CreatedActivityResponse(newActivity.Id, 
                                         newActivity.Start, 
                                         newActivity.Finish, 
-                                        newActivity.RestTime.ToString(),  
+                                        newActivity.RestPeriod.ToString(),  
                                         newActivity.Type)
         );
     }

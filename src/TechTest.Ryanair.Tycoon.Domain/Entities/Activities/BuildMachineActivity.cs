@@ -6,7 +6,7 @@ public class BuildMachineActivity : TimedActivity
     {
     }
 
-    public override TimeSpan RestTime => TimeSpan.FromHours(4);
+    public override TimeSpan RestPeriod => TimeSpan.FromHours(4);
 
     public override string Type => "MACHINE";
 }

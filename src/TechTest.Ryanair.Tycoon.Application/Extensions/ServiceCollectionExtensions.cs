@@ -4,6 +4,7 @@ using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity;
 using TechTest.Ryanair.Tycoon.Application.WorkerUseCases.GetWorkerById;
 using TechTest.Ryanair.Tycoon.Domain.Factories;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.CreateActivity;
+using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.GetActivityById;
 
 namespace TechTest.Ryanair.Tycoon.Application.Extensions;
 
@@ -11,33 +12,39 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddUseCases(this IServiceCollection services)
     {
-        services.AddScheduleActivityUseCase();
-        services.AddCreateActivityUseCase();
-        
-        services.AddCreateWorkerUseCase();
-        services.AddGetWorkerByIdUseCase();
+        services.AddScheduleActivity();
+        services.AddCreateActivity();
+        services.AddGetActivityById();
 
-        services. AddFactories();
+        services.AddCreateWorker();
+        services.AddGetWorkerById();
+
+        services.AddFactories();
 
         return services;
     }
 
-    public static IServiceCollection AddScheduleActivityUseCase(this IServiceCollection services)
+    public static IServiceCollection AddScheduleActivity(this IServiceCollection services)
     {
         return services.AddScoped<IScheduleActivityUseCase, ScheduleActivityUseCase>();
     }
 
-    public static IServiceCollection AddCreateActivityUseCase(this IServiceCollection services)
+    public static IServiceCollection AddCreateActivity(this IServiceCollection services)
     {
         return services.AddScoped<ICreateActivityUseCase, CreateActivityUseCase>();
     }
 
-    public static IServiceCollection AddCreateWorkerUseCase(this IServiceCollection services)
+    public static IServiceCollection AddGetActivityById(this IServiceCollection services)
+    {
+        return services.AddScoped<IGetActivityByIdUseCase, GetActivityByIdUseCase>();
+    }
+
+    public static IServiceCollection AddCreateWorker(this IServiceCollection services)
     {
         return services.AddScoped<ICreateWorkerUseCase, CreateWorkerUseCase>();
     }
 
-    public static IServiceCollection AddGetWorkerByIdUseCase(this IServiceCollection services)
+    public static IServiceCollection AddGetWorkerById(this IServiceCollection services)
     {
         return services.AddScoped<IGetWorkerByIdUseCase, GetWorkerByIdUseCase>();
     }

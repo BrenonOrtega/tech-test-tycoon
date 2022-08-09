@@ -13,8 +13,8 @@ namespace TechTest.Ryanair.Tycoon.Domain.Entities
         public virtual DateTime Start { get; protected set; }
         public virtual DateTime Finish { get; protected set; }
         public virtual TimeSpan Duration => Start - Finish;
-        public virtual DateTime FinishRestingDate => Finish + RestTime;
-        public abstract TimeSpan RestTime { get; }
+        public virtual DateTime FinishRestingDate => Finish + RestPeriod;
+        public abstract TimeSpan RestPeriod { get; }
         public abstract string Type { get; }
 
         public TimedActivity(Guid id, DateTime start, DateTime finish)
@@ -54,9 +54,9 @@ namespace TechTest.Ryanair.Tycoon.Domain.Entities
             var startsEqual = other.Start == Start;
             var finishEquals = other.Finish == Finish;
             var restingDateEquals = other.FinishRestingDate == FinishRestingDate;
-            var restTime = other.RestTime == other.RestTime;
+            var RestPeriod = other.RestPeriod == other.RestPeriod;
 
-            return IdEquals && startsEqual && finishEquals && restingDateEquals && restTime;
+            return IdEquals && startsEqual && finishEquals && restingDateEquals && RestPeriod;
         }
 
         public override bool Equals(object? obj)
@@ -76,7 +76,7 @@ namespace TechTest.Ryanair.Tycoon.Domain.Entities
                 + Start.GetHashCode() 
                 + Finish.GetHashCode() 
                 + FinishRestingDate.GetHashCode() 
-                + RestTime.GetHashCode();
+                + RestPeriod.GetHashCode();
         }
 
         public static readonly TimedActivity Null = new NullActivity();
@@ -84,7 +84,7 @@ namespace TechTest.Ryanair.Tycoon.Domain.Entities
         {
             public NullActivity() : this(Guid.Empty, DateTime.MinValue, DateTime.MaxValue) { }
             private NullActivity(Guid id, DateTime start, DateTime finish) : base(id, start, finish) { }
-            public override TimeSpan RestTime => TimeSpan.Zero;
+            public override TimeSpan RestPeriod => TimeSpan.Zero;
             public override string Type => "NULL";
         }
     }

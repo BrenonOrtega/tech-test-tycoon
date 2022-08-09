@@ -1,12 +1,13 @@
-﻿using TechTest.Ryanair.Tycoon.Domain.Entities;
+﻿using TechTest.Ryanair.Tycoon.Application.Dtos;
+using TechTest.Ryanair.Tycoon.Domain.Entities;
 
 namespace TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.GetActivityById;
 
 public class FoundActivityResponse
 {
-    public FoundActivityResponse(TimedActivity activity) => Activity = activity;
+    public FoundActivityResponse(ActivityDto activityDto) => Activity = activityDto;
 
-    public TimedActivity Activity { get; internal set; }
+    public ActivityDto Activity { get; }
 
-    public static readonly FoundActivityResponse Null = new(TimedActivity.Null);
+    public static readonly FoundActivityResponse Null = new(ActivityDto.Null);
 }
