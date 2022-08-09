@@ -38,6 +38,7 @@ public class ScheduleActivityUseCase : IScheduleActivityUseCase, IUseCase<Schedu
         foreach (var worker in workers)
         {
             var result = worker.WorksIn(activity);
+
             if (result.IsFailed)
             {
                 _logger.LogInformation("Could not schedule activity {id} from {startDate} - {endDate}.\n Worker {id} {name} was actually {status}.",
@@ -45,6 +46,7 @@ public class ScheduleActivityUseCase : IScheduleActivityUseCase, IUseCase<Schedu
 
                 return Result.Fail<ScheduledActivityResponse>(result.Error);
             }
+
             tasks.Add(() => _unitOfWork.WorkerRepository.UpdateAsync(worker.Id, worker));
         }
 

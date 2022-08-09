@@ -101,6 +101,29 @@ public class ScheduleActivityUseCaseTests
         acceptedErrors.Should().Contain(result.Error);
     }
 
+    [Fact]
+    public async Task Duplicated_Assignment_To_Component_Should_Fail()
+    {
+        var worker = new Worker(Guid.NewGuid(), "A");
+        var workerTwo = new Worker(Guid.NewGuid(), "B");
+
+        //Given
+        var command = new ScheduleActivityCommand(
+            new BuildComponentActivity(Guid.NewGuid(), DateTime.Today.AddDays(-1),DateTime.Now.AddHours(1)),
+            worker.Id, workerTwo.Id);
+
+        unitOfWork.WorkerRepository.GetWorkersAsync(Arg.Any<IEnumerable<Guid>>()).Returns(new List<Worker>() { worker, workerTwo });
+        var sut = GetMockedUseCase();
+
+        // When
+        var result = await sut.HandleAsync(command);
+
+        // Then 
+        result.IsSuccess.Should().BeFalse();
+        result.Error.Should().Be(DomainErrors.InvalidActivityAssignment);
+    }
+
+
     private IScheduleActivityUseCase GetMockedUseCase()
     {
         var logger = Substitute.For<ILogger<ScheduleActivityUseCase>>();

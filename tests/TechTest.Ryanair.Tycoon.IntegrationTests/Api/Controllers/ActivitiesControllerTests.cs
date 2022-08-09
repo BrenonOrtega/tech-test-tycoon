@@ -1,10 +1,13 @@
-﻿using Flurl.Http;
+﻿using Awarean.Sdk.Result;
+using Flurl.Http;
 using Microsoft.AspNetCore.TestHost;
 using System.Net;
 using TechTest.Ryanair.Tycoon.Api.Requests;
+using TechTest.Ryanair.Tycoon.Application;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.CreateActivity;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.GetActivityById;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity;
+using TechTest.Ryanair.Tycoon.Domain;
 using TechTest.Ryanair.Tycoon.IntegrationTests.Fixtures;
 
 namespace TechTest.Ryanair.Tycoon.IntegrationTests.Api.Controllers;
@@ -45,6 +48,36 @@ public class ActivitiesControllerTests
         actual.StatusCode.Should().Be((int)HttpStatusCode.Created);
         actual.Headers.Should().Contain(header => header.Name == "Location" && header.Value.Contains(request.Id.ToString()));
         content.ActivityId.Should().Be((Guid)schedule.Id);
+    }
+
+    [Fact]
+    public async Task Scheduling_Component_Activity_For_More_Than_One_Worker_Should_Fail()
+    {
+        var request = new CreateWorkerRequest() { Name = "A" };
+        var otherRequest = new CreateWorkerRequest() { Name = "B" };
+        
+        var response = await _client.Request("/api/workers").AllowAnyHttpStatus().PostJsonAsync(request).ReceiveJson();
+        var otherResponse = await _client.Request("/api/workers").AllowAnyHttpStatus().PostJsonAsync(otherRequest).ReceiveJson();
+        
+        var id = response.id;
+        var otherId = otherResponse.id;
+
+        var schedule = new ScheduleActivityRequest()
+        {
+            Id = Guid.NewGuid(),
+            StartDate = new DateTime(2022, 08, 08, 10, 10, 00),
+            FinishDate = new DateTime(2022, 08, 08, 15, 00, 00),
+            Workers = new List<string>() { id, otherId },
+            Type = "Component"
+        };
+
+        var actual = await _client.Request("/api/activities/schedule")
+            .AllowAnyHttpStatus()
+            .PostJsonAsync(schedule);
+        var content = await actual.GetJsonAsync<Error>();
+
+        actual.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+        content.Should().BeEquivalentTo(DomainErrors.InvalidActivityAssignment);
     }
 
     [Theory]

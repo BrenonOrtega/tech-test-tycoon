@@ -36,7 +36,7 @@ namespace TechTest.Ryanair.Tycoon.Domain.Entities
             return !(otherStartsAfter || finishesBefore);
         }
 
-        public Result HaveParticipant(Worker worker)
+        public virtual Result HaveParticipant(Worker worker)
         {
             if (worker.Activities.Contains(this) is false)
                 return Result.Fail(DomainErrors.InconsistentWorkerInActivity);
@@ -54,9 +54,9 @@ namespace TechTest.Ryanair.Tycoon.Domain.Entities
             var startsEqual = other.Start == Start;
             var finishEquals = other.Finish == Finish;
             var restingDateEquals = other.FinishRestingDate == FinishRestingDate;
-            var RestPeriod = other.RestPeriod == other.RestPeriod;
+            var restPeriodEquals = other.RestPeriod == RestPeriod;
 
-            return IdEquals && startsEqual && finishEquals && restingDateEquals && RestPeriod;
+            return IdEquals && startsEqual && finishEquals && restingDateEquals && restPeriodEquals;
         }
 
         public override bool Equals(object? obj)

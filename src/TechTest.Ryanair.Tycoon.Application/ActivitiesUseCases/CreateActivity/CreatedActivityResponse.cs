@@ -5,12 +5,12 @@ namespace TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.CreateActivity
 {
     public class CreatedActivityResponse
     {
-        public CreatedActivityResponse(Guid id, DateTime startDate, DateTime finishDate, string RestPeriod, string type)
+        public CreatedActivityResponse(Guid id, DateTime startDate, DateTime finishDate, string restPeriod, string type)
         {
             Id = id;
             StartDate = startDate;
             FinishDate = finishDate;
-            RestPeriod = RestPeriod;
+            RestPeriod = restPeriod;
             Type = type;
         }
 
