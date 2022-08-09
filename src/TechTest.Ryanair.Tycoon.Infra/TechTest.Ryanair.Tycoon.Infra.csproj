@@ -1,5 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -15,4 +14,9 @@
     <ProjectReference Include="..\TechTest.Ryanair.Tycoon.Domain\TechTest.Ryanair.Tycoon.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="TechTest.Ryanair.Tycoon.UnitTests"/>
+    <InternalsVisibleTo Include="TechTest.Ryanair.Tycoon.IntegrationTests"/>
+	<InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
 </Project>
