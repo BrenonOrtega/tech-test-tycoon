@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.TestHost;
 using System.Net;
 using TechTest.Ryanair.Tycoon.Api.Requests;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.CreateActivity;
+using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.GetActivityById;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity;
 using TechTest.Ryanair.Tycoon.IntegrationTests.Fixtures;
 
@@ -74,5 +75,38 @@ public class ActivitiesControllerTests
         content.FinishDate.Should().Be(request.FinishDate);
         content.StartDate.Should().Be(request.StartDate);
         content.Id.Should().Be(request.Id);
+    }
+
+    [Theory]
+    [InlineData("Component")]
+    [InlineData("Machine")]
+    public async Task Getting_Activity_By_Id_Should_Pass(string activityType)
+    {
+        // Given
+        var request = new GetActivityByIdRequest() { Id = Guid.NewGuid() };
+
+        var create = new CreateActivityRequest()
+        {
+            ActivityType = activityType,
+            Id = request.Id,
+            StartDate = new DateTime(2022, 08, 02),
+            FinishDate = new DateTime(2022, 08, 04)
+        };
+
+        var response = await _client.Request("/api/activities")
+            .AllowAnyHttpStatus()
+            .PostJsonAsync(create);
+
+        var locationHeader = response.Headers.Where(x => x.Name == "Location").Single();
+
+        // When
+        var actual = await _client.Request(locationHeader.Value)
+            .AllowHttpStatus(HttpStatusCode.OK)
+            .GetAsync();
+
+        var content = await actual.GetJsonAsync<FoundActivityResponse>();
+
+        // Then
+        actual.StatusCode.Should().Be((int)HttpStatusCode.OK);
     }
 }

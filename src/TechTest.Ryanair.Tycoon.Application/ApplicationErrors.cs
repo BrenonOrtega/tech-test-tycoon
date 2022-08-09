@@ -11,5 +11,6 @@ public class ApplicationErrors : BaseError
     public static readonly Error InvalidScheduleActivityCommand = Create("INVALID_SCHEDULE_COMMAND", "Provided worker Id or activity is invalid");
     public static readonly Error InvalidGuid = Create("INVALID_GET_WORKER_COMMAND", "Provided worker Id is invalid");
     public static readonly Error DuplicatedId = Create("DUPLICATED_ID", "Provided Id already exists in records.");
+    public static readonly Error ActivityNotFound = Create("ACTIVITY_NOT_FOUND", "The Provided activity was not found.");
 }
 
