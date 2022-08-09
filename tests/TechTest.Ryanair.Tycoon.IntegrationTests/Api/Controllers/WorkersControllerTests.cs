@@ -17,6 +17,7 @@ namespace TechTest.Ryanair.Tycoon.IntegrationTests.Api.Controllers
         {
             // Given
             var request = new CreateWorkerRequest() { Name = "A" };
+
             var created = await _fixture.Client
                 .Request("/api/workers")
                 .AllowAnyHttpStatus()
@@ -27,8 +28,9 @@ namespace TechTest.Ryanair.Tycoon.IntegrationTests.Api.Controllers
 
             // When 
             var response = await _fixture.Client
-                .Request($"/Api/workers/{id}")
-                .GetAsync();
+                .Request($"/api/workers/{id}")
+                .AllowAnyHttpStatus()
+                .GetJsonAsync();
 
             var actual = await response.GetJsonAsync<Worker>();
             response.StatusCode.Should().Be((int)HttpStatusCode.OK);

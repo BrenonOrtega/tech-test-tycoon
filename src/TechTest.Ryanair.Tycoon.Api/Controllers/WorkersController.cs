@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TechTest.Ryanair.Tycoon.Api.Requests;
 using TechTest.Ryanair.Tycoon.Application;
 using TechTest.Ryanair.Tycoon.Application.WorkerUseCases.CreateWorker;
+using TechTest.Ryanair.Tycoon.Application.WorkerUseCases.GetWorkerById;
 
 namespace TechTest.Ryanair.Tycoon.Api.Controllers;
 
@@ -12,11 +13,13 @@ public class WorkersController : ControllerBase
 {
     private readonly ILogger<WorkersController> _logger;
     private readonly ICreateWorkerUseCase _creator;
+    private readonly IGetWorkerByIdUseCase _getById;
 
-    public WorkersController(ILogger<WorkersController> logger, ICreateWorkerUseCase creator)
+    public WorkersController(ILogger<WorkersController> logger, ICreateWorkerUseCase creator, IGetWorkerByIdUseCase getById)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _creator = creator ?? throw new ArgumentNullException(nameof(creator));
+        _getById = getById ?? throw new ArgumentNullException(nameof(getById));
     }
 
     [HttpPost]
@@ -36,16 +39,14 @@ public class WorkersController : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetWorker(Guid id)
+    public async Task<IActionResult> GetWorker(GetWorkerByIdRequest request)
     {
-        /*var result = await _getById.HandleAsync(id);
+        var result = await _getById.HandleAsync(request.ToCommand());
 
-        if (result.IsSuccess && result.Value == Worker.Null)
+        if (result.IsFailed)
             return NotFound(result.Error);
 
-        return Ok(result.Value);*/
-
-        return Problem("This endpoint is not implemented yet.");
+        return Ok(result.Value);
     }
 
 }
