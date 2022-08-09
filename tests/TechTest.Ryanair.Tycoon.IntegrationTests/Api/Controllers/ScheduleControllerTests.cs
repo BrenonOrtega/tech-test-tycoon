@@ -1,9 +1,8 @@
 ﻿using Flurl.Http;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using System.Net;
 using TechTest.Ryanair.Tycoon.Api.Requests;
-using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.CreateWorker;
+using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity;
 using TechTest.Ryanair.Tycoon.IntegrationTests.Fixtures;
 
 namespace TechTest.Ryanair.Tycoon.IntegrationTests.Api.Controllers;

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using TechTest.Ryanair.Tycoon.Application.WorkerUseCases.CreateWorker;
-using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.CreateWorker;
+using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity;
 using TechTest.Ryanair.Tycoon.Application.WorkerUseCases.GetWorkerById;
 
 namespace TechTest.Ryanair.Tycoon.Application.Extensions;

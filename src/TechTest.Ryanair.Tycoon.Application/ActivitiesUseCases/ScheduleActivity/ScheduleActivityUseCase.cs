@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using TechTest.Ryanair.Tycoon.Domain.Entities;
 using TechTest.Ryanair.Tycoon.Domain.Repositories;
 
-namespace TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.CreateWorker;
+namespace TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity;
 
 public class ScheduleActivityUseCase : IScheduleActivityUseCase, IUseCase<ScheduleActivityCommand, ScheduledActivityResponse>
 {

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using TechTest.Ryanair.Tycoon.Api.Requests;
-using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.CreateWorker;
+using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity;
 
 namespace TechTest.Ryanair.Tycoon.Api.Controllers;
 
