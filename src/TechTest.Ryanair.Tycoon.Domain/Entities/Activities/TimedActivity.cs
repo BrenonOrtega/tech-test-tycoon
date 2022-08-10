@@ -1,6 +1,7 @@
 
 using Awarean.Sdk.Result;
 using System.Collections.Immutable;
+using System.Text.Json;
 
 namespace TechTest.Ryanair.Tycoon.Domain.Entities
 {
@@ -42,6 +43,14 @@ namespace TechTest.Ryanair.Tycoon.Domain.Entities
 
             _workers.Add(worker.Id);
             return Result.Success();
+        }
+
+        internal virtual Result WorksNoMore(Worker worker)
+        {
+            if (_workers.Remove(worker.Id))
+                return Result.Success();
+
+            throw new InvalidOperationException($"Inconsistent state between activity {JsonSerializer.Serialize(this)} and worker {JsonSerializer.Serialize(worker)}.");
         }
 
         public bool Equals(TimedActivity? other)

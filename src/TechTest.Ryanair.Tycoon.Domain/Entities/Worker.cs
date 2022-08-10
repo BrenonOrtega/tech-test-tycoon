@@ -1,3 +1,4 @@
+using Awarean.Sdk.Result;
 using System.Collections.Immutable;
 using TechTest.Ryanair.Tycoon.Domain.FluentApi.WorkerFluent;
 
@@ -63,4 +64,15 @@ public class Worker : IActivityWorker
     }
 
     public static readonly Worker Null = new(Guid.Empty, string.Empty);
+
+    public Result Unassign(TimedActivity activity)
+    {
+        if(_activities.Remove(activity))
+        {
+            activity.WorksNoMore(this);
+            return Result.Success();
+        }
+
+        return Result.Fail(DomainErrors.ActivityNotAssignedToWorker);
+    }
 }

@@ -61,6 +61,40 @@ public class WorkerTests
     }
 
     [Fact]
+    public void Workers_Should_Remove_Activities_When_Asked()
+    {
+        // Given
+        var sut = new Worker(name: "A", id: Guid.NewGuid());
+
+        var activity = new BuildComponentActivity(id: Guid.NewGuid(), start: DateTime.UtcNow, finish: DateTime.Now.AddDays(1));
+        sut.WorksIn(activity);
+
+        // When
+        var result = sut.Unassign(activity);
+
+        // Then
+        result.IsSuccess.Should().BeTrue();
+        sut.Activities.Should().NotContain(activity);
+        activity.Workers.Should().NotContain(sut.Id);
+    }
+
+    [Fact]
+    public void Removing_NotAssined_Activities_Should_Fail()
+    {
+        // Given
+        var sut = new Worker(name: "A", id: Guid.NewGuid());
+
+        // When
+        var activity = new BuildComponentActivity(id: Guid.NewGuid(), start: DateTime.UtcNow, finish: DateTime.Now.AddDays(1));
+
+        // Then
+        var result = sut.Unassign(activity);
+
+        result.IsFailed.Should().BeTrue();
+        result.Error.Should().Be(DomainErrors.ActivityNotAssignedToWorker);
+    }
+
+    [Fact]
     public void Null_Worker_Should_Not_Work_In_Activities()
     {
         var sut = Worker.Null;

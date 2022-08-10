@@ -10,5 +10,5 @@ public class DomainErrors : BaseError
     public static readonly Error AddingActivityToNullWorker = Create("ADDING_ACTIVITY_TO_NULL_WORKER", "Cannot assign activities to a null worker");
     public static readonly Error TryWorkingInInvalidActivity = Create("WORKER_INVALID_ACTIVITY", "Worker cannot work in an invalid activity.");
     public static readonly Error InvalidActivityAssignment = Create("INVALID_ACTIVITY_ASSIGNMENT", "Cannot Assign more than one worker to component activity.");
-
+    public static readonly Error ActivityNotAssignedToWorker = Create("INVALID_ACTIVITY_UNASSIGNMENT", "Cannot unnassign activity that is not assigned to worker");
 }
