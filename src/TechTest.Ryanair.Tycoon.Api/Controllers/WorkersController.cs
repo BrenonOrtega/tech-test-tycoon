@@ -27,7 +27,7 @@ public class WorkersController : ControllerBase
     [ProducesResponseType((int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.UnprocessableEntity)]
-    public async Task<IActionResult> CreateWorker(CreateWorkerRequest request)
+    public async Task<IActionResult> CreateWorker([FromBody]CreateWorkerRequest request)
     {
         if (request is null)
             return BadRequest(Error.Create("INVALID_REQUEST", "One or more validation errors ocurred for the request."));
@@ -42,11 +42,12 @@ public class WorkersController : ControllerBase
         return CreatedAtAction(nameof(GetWorker), new { id = result.Value.Id }, result.Value);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:guid}")]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<IActionResult> GetWorker([FromRoute] GetWorkerByIdRequest request)
+    public async Task<IActionResult> GetWorker([FromRoute]Guid id)
     {
+        var request = new GetWorkerByIdRequest() { Id = id };
         var result = await _getById.HandleAsync(request.ToCommand());
 
         if (result.IsFailed)

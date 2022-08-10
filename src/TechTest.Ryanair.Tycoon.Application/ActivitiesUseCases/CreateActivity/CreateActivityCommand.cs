@@ -12,7 +12,7 @@ public class CreateActivityCommand : ICommand
     public CreateActivityCommand(Guid id, string activityType, DateTime startDate, DateTime finishDate)
     {
         Id = id;
-        ActivityType = activityType.ToUpper();
+        ActivityType = activityType?.ToUpper();
         StartDate = startDate;
         FinishDate = finishDate;
     }

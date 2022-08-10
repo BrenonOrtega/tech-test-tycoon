@@ -1,5 +1,7 @@
 ﻿using Awarean.Sdk.Result;
 using Microsoft.Extensions.Logging;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Text.Json;
 using TechTest.Ryanair.Tycoon.Domain.Repositories;
 
@@ -58,5 +60,13 @@ public abstract class BaseInMemoryRepository<TEntity, TLogger> : IBaseRepository
 
         Data[id] = updated;
         return Result.Success();
+    }
+
+    public async Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> filter = null)
+    {
+        if (filter is null)
+            return Data.Select(x => x.Value);
+
+        return Data.Select(x => x.Value).AsQueryable().Where(filter);
     }
 }

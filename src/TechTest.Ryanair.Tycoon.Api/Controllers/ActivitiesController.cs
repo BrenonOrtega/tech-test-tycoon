@@ -34,9 +34,37 @@ public class ActivitiesController : ControllerBase
         if (request is null)
             return BadRequest();
 
-        var command = request.ToCommand();
+        var createCommand = request.ToCommand();
+        if (createCommand.IsFailed)
+            return BadRequest(createCommand.Error);
 
-        var result = await _scheduler.HandleAsync(command);
+        var result = await _scheduler.HandleAsync(createCommand.Value);
+
+        if (result.IsFailed)
+        {
+            _logger.LogInformation("Failed scheduling activity of Type {type}, starting {startDate} - ending {endData} for workers {workers}.\nError: {error}.",
+                request.Type, request.StartDate, request.FinishDate, string.Join(',', request.Workers ?? new()), JsonSerializer.Serialize(result.Error));
+
+            return BadRequest(result.Error);
+        }
+
+        return CreatedAtAction(nameof(Get), new { Id = result.Value.ActivityId }, result.Value);
+    }
+
+    [HttpPatch("schedule")]
+    [ProducesResponseType((int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    public async Task<IActionResult> ScheduleExisting([FromBody]ScheduleActivityRequest request)
+    {
+        if (request is null)
+            return BadRequest();
+
+        var createCommand = request.ToCommand();
+        if (createCommand.IsFailed)
+            return BadRequest(createCommand.Error);
+
+        var result = await _scheduler.HandleAsync(createCommand.Value);
 
         if (result.IsFailed)
         {
@@ -52,7 +80,7 @@ public class ActivitiesController : ControllerBase
     [HttpPost]
     [ProducesResponseType((int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> Post([FromBody] CreateActivityRequest request)
+    public async Task<IActionResult> Post([FromBody]CreateActivityRequest request)
     {
         if (request is null)
             return BadRequest();
@@ -75,11 +103,9 @@ public class ActivitiesController : ControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(FoundActivityResponse))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> Get([FromRoute] GetActivityByIdRequest request)
+    public async Task<IActionResult> Get([FromRoute] Guid id)
     {
-        if (request is null)
-            return BadRequest();
-
+        var request = new GetActivityByIdRequest() { Id = id };
         var command = request.ToCommand();
         var result = await _getById.HandleAsync(command);
 

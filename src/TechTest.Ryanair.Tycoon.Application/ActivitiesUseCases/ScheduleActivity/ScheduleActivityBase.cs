@@ -5,12 +5,12 @@ using TechTest.Ryanair.Tycoon.Domain.Repositories;
 
 namespace TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity;
 
-public class ScheduleActivityUseCase : IScheduleActivityUseCase
+internal class ScheduleActivityBase : IScheduleActivityUseCase
 {
-    private readonly ILogger<ScheduleActivityUseCase> _logger;
+    private readonly ILogger<ScheduleActivityBase> _logger;
     private readonly IUnitOfWork _unitOfWork;
 
-    public ScheduleActivityUseCase(ILogger<ScheduleActivityUseCase> logger, IUnitOfWork unitOfWork)
+    public ScheduleActivityBase(ILogger<ScheduleActivityBase> logger, IUnitOfWork unitOfWork)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -45,16 +45,6 @@ public class ScheduleActivityUseCase : IScheduleActivityUseCase
 
                 return Result.Fail<ScheduledActivityResponse>(result.Error);
             }
-
-            await _unitOfWork.WorkerRepository.UpdateAsync(worker.Id, worker);
-        }
-
-        var updateResult = await UpdateActivity(activity);
-
-        if (updateResult.IsFailed)
-        {
-            await RollbackWorkersAsync(workers, activity);
-            return Result.Fail<ScheduledActivityResponse>(updateResult.Error);
         }
 
         return Result.Success(new ScheduledActivityResponse() { ActivityId = activity.Id });
@@ -81,18 +71,5 @@ public class ScheduleActivityUseCase : IScheduleActivityUseCase
         await Task.WhenAll(tasks);
         var updated = await _unitOfWork.SaveAsync();
         return updated;
-    }
-
-    private async Task<Result> UpdateActivity(TimedActivity activity)
-    {
-        var activityUpdated = await _unitOfWork.ActivityRepository.UpdateAsync(activity.Id, activity);
-        var updateResult = await _unitOfWork.SaveAsync();
-
-        if(activityUpdated.IsFailed || updateResult.IsFailed)
-        {
-            return Result.Fail(activityUpdated.Error ?? updateResult.Error);
-        }
-
-        return Result.Success();
     }
 }

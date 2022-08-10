@@ -5,6 +5,7 @@ using TechTest.Ryanair.Tycoon.Application.WorkerUseCases.CreateWorker;
 
 namespace TechTest.Ryanair.Tycoon.Api.Requests;
 
+[BindProperties]
 public class CreateWorkerRequest
 {
     [FromHeader]

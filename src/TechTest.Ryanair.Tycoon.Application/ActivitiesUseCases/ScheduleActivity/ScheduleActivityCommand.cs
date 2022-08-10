@@ -7,6 +7,7 @@ public class ScheduleActivityCommand : ICommand
 {
     public Guid[] AssignedWorkers { get; private set; }
     public TimedActivity Activity { get; private set; }
+    
 
     public ScheduleActivityCommand(TimedActivity activity, params Guid[] assignedWorkers)
     {
@@ -24,4 +25,6 @@ public class ScheduleActivityCommand : ICommand
             ? Result.Success()
             : Result.Fail(ApplicationErrors.InvalidScheduleActivityCommand);
     }
+
+    public static readonly ScheduleActivityCommand Null = new(TimedActivity.Null, Array.Empty<Guid>());
 }
