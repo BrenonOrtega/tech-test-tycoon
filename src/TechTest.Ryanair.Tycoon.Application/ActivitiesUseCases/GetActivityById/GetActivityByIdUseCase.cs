@@ -7,29 +7,21 @@ namespace TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.GetActivityById
 
 internal class GetActivityByIdUseCase : IGetActivityByIdUseCase
 {
-    private readonly ITimedActivityRepository _repo;
+    private readonly IBaseGetByIdUseCase _baseGetById;
 
-    public GetActivityByIdUseCase(ITimedActivityRepository repo)
+    public GetActivityByIdUseCase(IBaseGetByIdUseCase baseGetById)
     {
-        _repo = repo ?? throw new ArgumentNullException(nameof(repo));
+        _baseGetById = baseGetById ?? throw new ArgumentNullException(nameof(baseGetById));
     }
 
     public async Task<Result<FoundActivityResponse>> HandleAsync(GetActivityByIdCommand command)
     {
-        if (command is null)
-            return Result.Fail<FoundActivityResponse>(ApplicationErrors.NullCommand);
+        var getResult = await _baseGetById.HandleAsync(command);
 
-        var validation = command.Validate();
+        if (getResult.IsFailed)
+            return Result.Fail<FoundActivityResponse>(getResult.Error);
 
-        if (validation.IsFailed)
-            return Result.Fail<FoundActivityResponse>(validation.Error);
-
-        var queriedActivity = await _repo.GetAsync(command.Id);
-
-        if (queriedActivity == TimedActivity.Null)
-            return Result.Fail<FoundActivityResponse>(ApplicationErrors.ActivityNotFound);
-
-        var dto = ActivityDto.FromEntity(queriedActivity);
+        var dto = ActivityDto.FromEntity(getResult.Value);
         return Result.Success(new FoundActivityResponse(dto));
     }
 }

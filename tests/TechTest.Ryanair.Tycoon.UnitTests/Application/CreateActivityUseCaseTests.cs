@@ -57,7 +57,7 @@ public class CreateActivityUseCaseTests
             startDate: DateTime.Today,
             finishDate: DateTime.Today.AddDays(1));
 
-        repo.GetAsync(Arg.Any<Guid>()).Returns(new BuildComponentActivity(command.Id, DateTime.UtcNow, DateTime.UtcNow));
+        repo.GetAsync(Arg.Any<Guid>()).Returns(new BuildComponentActivity(command.Id, DateTime.UtcNow, DateTime.UtcNow.AddMinutes(1)));
 
         // When
         var result = await sut.HandleAsync(command);
