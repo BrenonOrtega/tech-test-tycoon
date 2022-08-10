@@ -31,20 +31,30 @@ internal class CreateActivityUseCase : ICreateActivityUseCase
         var existent = await _activities.GetAsync(command.Id);
 
         if (existent != TimedActivity.Null)
+        {
+            var error = ApplicationErrors.DuplicatedId;
+            _logger.LogInformation("ERROR: {code} - {message} ocurred when creating a new activity of type {type} for id {id}.",
+                error.Code, error.Message, command.ActivityType, command.Id);
             return Result.Fail<CreatedActivityResponse>(ApplicationErrors.DuplicatedId);
+        }
 
         var newActivity = _factory.FromCreateCommand(command);
         var result = await _activities.CreateAsync(newActivity);
 
         if (result.IsFailed)
-            return Result.Fail<CreatedActivityResponse>(result.Error);
+        {
+            var error = result.Error;
+            _logger.LogInformation("ERROR: {code} - {message} ocurred when creating a new activity of type {type} for id {id}.",
+                error.Code, error.Message, command.ActivityType, command.Id);
+            return Result.Fail<CreatedActivityResponse>(error);
+        }
 
         return Result.Success(
-            new CreatedActivityResponse(newActivity.Id,
-                                        newActivity.Start,
-                                        newActivity.Finish,
-                                        newActivity.RestPeriod.ToString(),
-                                        newActivity.Type)
-        );
+            new CreatedActivityResponse(
+                id: newActivity.Id, 
+                startDate: newActivity.Start,
+                finishDate: newActivity.Finish, 
+                restPeriod:newActivity.RestPeriod.ToString(), 
+                type: newActivity.Type));
     }
 }
