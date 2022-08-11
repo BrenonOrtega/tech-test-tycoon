@@ -5,7 +5,9 @@ using TechTest.Ryanair.Tycoon.Api.Requests;
 using TechTest.Ryanair.Tycoon.Application;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.CreateActivity;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.GetActivityById;
-using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity;
+using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity.ScheduleNew;
+using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity.AssignExistent;
+using Awarean.Sdk.Result;
 
 namespace TechTest.Ryanair.Tycoon.Api.Controllers;
 
@@ -13,15 +15,18 @@ namespace TechTest.Ryanair.Tycoon.Api.Controllers;
 public class ActivitiesController : ControllerBase
 {
     private readonly ILogger<ActivitiesController> _logger;
-    private readonly IScheduleActivityUseCase _scheduler;
+    private readonly IAssignExistentActivityUseCase _assignExistent;
+    private readonly IScheduleNewActivityUseCase _scheduleNew;
     private readonly ICreateActivityUseCase _createActivity;
     private readonly IGetActivityByIdUseCase _getById;
 
-    public ActivitiesController(ILogger<ActivitiesController> logger, IScheduleActivityUseCase scheduler,
+    public ActivitiesController(ILogger<ActivitiesController> logger, IScheduleNewActivityUseCase scheduleNew, IAssignExistentActivityUseCase assignExistent,
+
         ICreateActivityUseCase createActivity, IGetActivityByIdUseCase getById)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _scheduler = scheduler ?? throw new ArgumentNullException(nameof(scheduler));
+        _assignExistent = assignExistent ?? throw new ArgumentNullException(nameof(assignExistent));
+        _scheduleNew = scheduleNew ?? throw new ArgumentNullException(nameof(scheduleNew));
         _createActivity = createActivity ?? throw new ArgumentNullException(nameof(createActivity));
         _getById = getById ?? throw new ArgumentNullException(nameof(getById));
     }
@@ -29,7 +34,7 @@ public class ActivitiesController : ControllerBase
     [HttpPost("schedule")]
     [ProducesResponseType((int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> Schedule([FromBody] ScheduleActivityRequest request)
+    public async Task<IActionResult> Schedule([FromBody] ScheduleNewActivityRequest request)
     {
         if (request is null)
             return BadRequest();
@@ -38,7 +43,7 @@ public class ActivitiesController : ControllerBase
         if (createCommand.IsFailed)
             return BadRequest(createCommand.Error);
 
-        var result = await _scheduler.HandleAsync(createCommand.Value);
+        var result = await _scheduleNew.HandleAsync(createCommand.Value);
 
         if (result.IsFailed)
         {
@@ -52,29 +57,29 @@ public class ActivitiesController : ControllerBase
     }
 
     [HttpPatch("schedule")]
-    [ProducesResponseType((int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.Accepted)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> ScheduleExisting([FromBody]ScheduleActivityRequest request)
+    public async Task<IActionResult> ScheduleExisting([FromBody]AssignExistentActivityRequest request)
     {
         if (request is null)
             return BadRequest();
 
-        var createCommand = request.ToCommand();
-        if (createCommand.IsFailed)
-            return BadRequest(createCommand.Error);
-
-        var result = await _scheduler.HandleAsync(createCommand.Value);
+        var command = request.ToCommand();
+        var result = await _assignExistent.HandleAsync(command);
 
         if (result.IsFailed)
         {
-            _logger.LogInformation("Failed scheduling activity of Type {type}, starting {startDate} - ending {endData} for workers {workers}.\nError: {error}.",
-                request.Type, request.StartDate, request.FinishDate, string.Join(',', request.Workers ?? new()), JsonSerializer.Serialize(result.Error));
+            _logger.LogInformation("Failed scheduling activity {id} for workers {workers}\nError: {error}.",
+                request.ActivityId, string.Join(',', request.WorkerIds ?? new()), JsonSerializer.Serialize(result.Error));
+
+            if (result.Error == ApplicationErrors.ActivityNotFound)
+                return NotFound(result.Error);
 
             return BadRequest(result.Error);
         }
 
-        return CreatedAtAction(nameof(Get), new { Id = result.Value.ActivityId }, result.Value);
+        return Accepted(result.Value);
     }
 
     [HttpPost]
@@ -83,7 +88,7 @@ public class ActivitiesController : ControllerBase
     public async Task<IActionResult> Post([FromBody]CreateActivityRequest request)
     {
         if (request is null)
-            return BadRequest();
+            return BadRequest(Error.Create("INVALID_REQUEST", "Received an invalid request when posting an activity."));
 
         var command = request.ToCommand();
 

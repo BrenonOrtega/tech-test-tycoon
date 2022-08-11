@@ -1,8 +1,8 @@
 ﻿using Awarean.Sdk.Result;
 
-namespace TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.AssignExistentActivity;
+namespace TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity.AssignExistent;
 
-internal class AssignExistentActivityCommand : ICommand
+public class AssignExistentActivityCommand : ICommand
 {
     public Guid ActivityId { get; }
     public IEnumerable<Guid> Workers { get; }

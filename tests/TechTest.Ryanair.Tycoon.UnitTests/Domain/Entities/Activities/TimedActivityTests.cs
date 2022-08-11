@@ -4,6 +4,19 @@ namespace TechTest.Ryanair.Tycoon.UnitTests.Domain.Entities.Activities
 {
     public class TimedActivityTests
     {
+        [Fact]
+        public void When_Checking_Activities_Should_Say_If_Overlaps_By_Rest_Period()
+        {
+            var first = new BuildMachineActivity(Guid.NewGuid(), start: new DateTime(year: 2022, month: 05, day: 09, hour: 00, minute: 00, second: 00),
+                                                                 finish: new DateTime(year: 2022, month: 05, day: 10, hour: 00, minute: 00, second: 00));
+
+            var second = new BuildComponentActivity(Guid.NewGuid(), start: new DateTime(year: 2022, month: 05, day: 10, hour: 3, minute: 59, second: 59),
+                                                                    finish: new DateTime(year: 2022, month: 05, day: 10, hour: 16, minute: 00, second: 00));
+            var overlaps = first.OverlapsByRest(second);
+
+            overlaps.Should().BeTrue();
+        }
+
         [Theory]
         [MemberData(nameof(OverlappingActivitiesGenerator))]
         public void When_Checking_Activities_Should_Say_If_Overlaps(TimedActivity first, TimedActivity second)
@@ -72,6 +85,18 @@ namespace TechTest.Ryanair.Tycoon.UnitTests.Domain.Entities.Activities
             sut.Workers.Should().Contain(worker.Id);
         }
 
+        [Fact]
+        public void Duration_Should_Be_Finish_Less_Start_Date()
+        {
+            var start = new DateTime(2022, 08, 10, 10, 15, 00);
+            var finish = new DateTime(2022, 08, 10, 10, 20, 00);
+            var expected = finish - start;
+
+            var sut = new BuildMachineActivity(Guid.NewGuid(), start, finish);
+
+            sut.Duration.Should().Be(expected);
+        }
+
         public static IEnumerable<object[]> TypeActivitiesGenerator()
             => typeof(TimedActivity).Assembly
                 .GetTypes()
@@ -107,7 +132,7 @@ namespace TechTest.Ryanair.Tycoon.UnitTests.Domain.Entities.Activities
             yield return new object[]
             {   // Second overlaping by rest time by the last second.
                 new BuildComponentActivity( Guid.NewGuid(), new DateTime(year: 2022, month: 05, day: 10, hour: 14, minute:33, second:20), new DateTime(year: 2022, month: 05, day: 10, hour: 15, minute:00, second:00)),
-                new BuildComponentActivity( Guid.NewGuid(), new DateTime(year: 2022, month: 05, day: 10, hour: 16, minute:59, second:59), new DateTime(year: 2022, month: 05, day: 11, hour: 18, minute:00, second:00))
+                new BuildComponentActivity( Guid.NewGuid(), new DateTime(year: 2022, month: 05, day: 10, hour: 14, minute:59, second:59), new DateTime(year: 2022, month: 05, day: 11, hour: 18, minute:00, second:00))
             };
         }
 

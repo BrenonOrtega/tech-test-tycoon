@@ -1,4 +1,4 @@
-namespace TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity;
+namespace TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity.ScheduleNew;
 
 public class ScheduledActivityResponse
 {

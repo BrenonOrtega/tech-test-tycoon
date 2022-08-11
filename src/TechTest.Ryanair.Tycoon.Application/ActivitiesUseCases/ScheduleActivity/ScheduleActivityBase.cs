@@ -1,11 +1,12 @@
 using Awarean.Sdk.Result;
 using Microsoft.Extensions.Logging;
+using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity.ScheduleNew;
 using TechTest.Ryanair.Tycoon.Domain.Entities;
 using TechTest.Ryanair.Tycoon.Domain.Repositories;
 
 namespace TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity;
 
-internal class ScheduleActivityBase : IScheduleActivityUseCase
+internal class ScheduleActivityBase : IScheduleActivityBase
 {
     private readonly ILogger<ScheduleActivityBase> _logger;
     private readonly IUnitOfWork _unitOfWork;
@@ -16,24 +17,36 @@ internal class ScheduleActivityBase : IScheduleActivityUseCase
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
 
-    public async Task<Result<ScheduledActivityResponse>> HandleAsync(ScheduleActivityCommand command)
+    public async Task<Result<TimedActivity>> HandleAsync(ScheduleActivityCommand command)
     {
         if (command is null)
-            return Result.Fail<ScheduledActivityResponse>(ApplicationErrors.InvalidCommand);
+            return Result.Fail<TimedActivity>(ApplicationErrors.InvalidCommand);
 
         var validation = command.Validate();
         if (validation.IsFailed)
-            return Result.Fail<ScheduledActivityResponse>(validation.Error);
+            return Result.Fail<TimedActivity>(validation.Error);
 
         var workers = await _unitOfWork.WorkerRepository.GetWorkersAsync(command.AssignedWorkers);
         if (workers.Any() is false)
-            return Result.Fail<ScheduledActivityResponse>(ApplicationErrors.WorkerNotFound);
+            return Result.Fail<TimedActivity>(ApplicationErrors.WorkerNotFound);
 
-        return await ScheduleForWorkers(command.Activity, workers);
+        var scheduleResult = await ScheduleForWorkers(command.Activity, workers);
+
+        if(scheduleResult.IsFailed)
+        {
+            await RollbackWorkersAsync(command.Activity, workers);
+           
+            return Result.Fail<TimedActivity>(scheduleResult.Error);
+        }
+
+        return Result.Success(command.Activity);
     }
 
-    private async Task<Result<ScheduledActivityResponse>> ScheduleForWorkers(TimedActivity activity, IEnumerable<Worker> workers)
+    private async Task<Result> ScheduleForWorkers(TimedActivity activity, IEnumerable<Worker> workers)
     {
+        var tasks = new List<Task>();
+        var results = new List<Result>();
+
         foreach (var worker in workers)
         {
             var result = worker.WorksIn(activity);
@@ -45,14 +58,27 @@ internal class ScheduleActivityBase : IScheduleActivityUseCase
 
                 return Result.Fail<ScheduledActivityResponse>(result.Error);
             }
+            var updateWorker = async () => results.Add(await _unitOfWork.WorkerRepository.UpdateAsync(worker.Id, worker));
+            tasks.Add(updateWorker.Invoke());
         }
 
-        return Result.Success(new ScheduledActivityResponse() { ActivityId = activity.Id });
+        return await UpdateAndCheckIntegrity(tasks, results);
     }
 
-    private async Task<Result> RollbackWorkersAsync(IEnumerable<Worker> workers, TimedActivity activity)
+    private static async Task<Result> UpdateAndCheckIntegrity(List<Task> tasks, List<Result> results)
     {
-        var tasks = new List<Task>(workers.Count());
+        await Task.WhenAll(tasks);
+
+        var failed = results.FirstOrDefault(x => x.IsFailed);
+
+        if (failed != default)
+            return Result.Fail(failed.Error);
+
+        return Result.Success();
+    }
+
+    private async Task<Result> RollbackWorkersAsync(TimedActivity activity, IEnumerable<Worker> workers)
+    {
         foreach (var worker in workers)
         {
             var result = worker.Unassign(activity);
@@ -64,12 +90,8 @@ internal class ScheduleActivityBase : IScheduleActivityUseCase
 
                 return Result.Fail(result.Error);
             }
-
-            tasks.Add(_unitOfWork.WorkerRepository.UpdateAsync(worker.Id, worker));
         }
 
-        await Task.WhenAll(tasks);
-        var updated = await _unitOfWork.SaveAsync();
-        return updated;
+        return Result.Success();
     }
 }

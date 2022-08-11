@@ -1,7 +1,7 @@
 ﻿using Awarean.Sdk.Result;
 using Microsoft.Extensions.DependencyInjection;
-using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.AssignExistentActivity;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.CreateActivity;
+using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity.AssignExistent;
 using TechTest.Ryanair.Tycoon.Application.Extensions;
 using TechTest.Ryanair.Tycoon.Application.WorkerUseCases.CreateWorker;
 using TechTest.Ryanair.Tycoon.Infra.Extensions;

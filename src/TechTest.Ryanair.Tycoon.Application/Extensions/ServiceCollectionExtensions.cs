@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.AssignExistentActivity;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.CreateActivity;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.GetActivityById;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity;
+using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity.AssignExistent;
+using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity.ScheduleNew;
 using TechTest.Ryanair.Tycoon.Application.WorkerUseCases.CreateWorker;
 using TechTest.Ryanair.Tycoon.Application.WorkerUseCases.GetWorkerById;
 using TechTest.Ryanair.Tycoon.Domain.Factories;
@@ -29,7 +30,8 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddScheduleActivity(this IServiceCollection services)
     {
-        return services.AddScoped<IScheduleActivityUseCase, ScheduleActivityUseCase>();
+        services.AddScoped<IScheduleActivityBase, ScheduleActivityBase>();
+        return services.AddScoped<IScheduleNewActivityUseCase, ScheduleNewActivityUseCase>();
     }
 
     public static IServiceCollection AddCreateActivity(this IServiceCollection services)
@@ -49,6 +51,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddAssignActivity(this IServiceCollection services)
     {
+        services.AddScoped<IScheduleActivityBase, ScheduleActivityBase>();
         return services.AddScoped<IAssignExistentActivityUseCase, AssignExistentActivityUseCase>();
     }
 

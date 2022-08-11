@@ -1,12 +1,8 @@
 ﻿using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.CreateActivity;
-using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity;
 using TechTest.Ryanair.Tycoon.Domain.Entities;
 
 namespace TechTest.Ryanair.Tycoon.Domain.Factories
 {
-    public delegate TimedActivity CreateActivityOnly(string type, CreateActivityCommand command);
-    public delegate TimedActivity CreateFromSchedule(ScheduleActivityCommand command);
-
     public class ActivityFactory : IActivityFactory
     {
         // This could be removed when activities parametrized from a database, or from configuration are implemented.

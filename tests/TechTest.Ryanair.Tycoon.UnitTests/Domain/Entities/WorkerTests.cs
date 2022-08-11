@@ -105,6 +105,19 @@ public class WorkerTests
         result.Error.Should().Be(DomainErrors.AddingActivityToNullWorker);
     }
 
+    [Fact]
+    public void Assign_Activities_During_Recharge_Time_Are_NotAllowed()
+    {
+        var sut = new Worker(name: "A", id: Guid.NewGuid());
+
+        sut.WorksIn(new BuildMachineActivity(Guid.NewGuid(), DateTime.Now, DateTime.Now.AddMinutes(1)));
+
+        var result = sut.WorksIn(new BuildMachineActivity(Guid.NewGuid(), DateTime.Now.AddMinutes(1), DateTime.Now.AddMinutes(10)));
+
+        result.IsFailed.Should().BeTrue();
+        result.Error.Should().Be(DomainErrors.ActivityScheduledInRestTime);
+    }
+
     [Theory]
     [MemberData(nameof(StatusGenerator))]
     public void Worker_Status_Should_Depend_On_Activities(Worker.Status expectedStatus, TimedActivity activity)

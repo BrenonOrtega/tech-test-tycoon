@@ -1,13 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity.ScheduleNew;
 using TechTest.Ryanair.Tycoon.Domain.Entities;
 
-namespace TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity
+namespace TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity;
+
+public interface IScheduleActivityBase : IUseCase<ScheduleActivityCommand, TimedActivity>
 {
-    internal interface IScheduleActivityBase : IUseCase<ScheduleActivityCommand, (TimedActivity activity, IEnumerable<Worker> workers)>
-    {
-        
-    }
+
 }

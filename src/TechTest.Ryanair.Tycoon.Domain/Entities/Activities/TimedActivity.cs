@@ -12,7 +12,7 @@ namespace TechTest.Ryanair.Tycoon.Domain.Entities
         public virtual ImmutableHashSet<Guid> Workers => _workers.ToImmutableHashSet();
         public virtual DateTime Start { get; protected set; }
         public virtual DateTime Finish { get; protected set; }
-        public virtual TimeSpan Duration => Start - Finish;
+        public virtual TimeSpan Duration => Finish - Start;
         public virtual DateTime FinishRestingDate => Finish + RestPeriod;
         public abstract TimeSpan RestPeriod { get; }
         public abstract string Type { get; }
@@ -28,6 +28,15 @@ namespace TechTest.Ryanair.Tycoon.Domain.Entities
         }
 
         public bool Overlaps(TimedActivity other)
+        {
+            var otherStartsAfter = Finish <= other.Start && Start < other.Start;
+
+            var finishesBefore = other.Finish <= Start && other.Start < Start;
+
+            return !(otherStartsAfter || finishesBefore);
+        }
+
+        public bool OverlapsByRest(TimedActivity other)
         {
             var otherStartsAfter = FinishRestingDate <= other.Start && Start < other.Start;
 
@@ -50,7 +59,7 @@ namespace TechTest.Ryanair.Tycoon.Domain.Entities
             if (_workers.Remove(worker.Id))
                 return Result.Success();
 
-            throw new InvalidOperationException($"Inconsistent state between activity {JsonSerializer.Serialize(this)} and worker {JsonSerializer.Serialize(worker)}.");
+            return Result.Fail(DomainErrors.InconsistentWorkerInActivity);
         }
 
         public bool Equals(TimedActivity? other)

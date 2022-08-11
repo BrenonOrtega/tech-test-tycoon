@@ -4,7 +4,8 @@ using System.Net;
 using TechTest.Ryanair.Tycoon.Api.Requests;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.CreateActivity;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.GetActivityById;
-using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity;
+using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity.AssignExistent;
+using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity.ScheduleNew;
 using TechTest.Ryanair.Tycoon.Domain;
 using TechTest.Ryanair.Tycoon.IntegrationTests.Fixtures;
 
@@ -29,7 +30,7 @@ public class ActivitiesControllerTests
         var response = await _client.Request("/api/workers").AllowAnyHttpStatus().PostJsonAsync(request).ReceiveJson();
         var id = response.id;
 
-        var schedule = new ScheduleActivityRequest()
+        var schedule = new ScheduleNewActivityRequest()
         {
             Id = Guid.NewGuid(),
             StartDate = new DateTime(2022, 08, 08, 10, 10, 00),
@@ -41,11 +42,36 @@ public class ActivitiesControllerTests
         var actual = await _client.Request("/api/activities/schedule")
             .AllowAnyHttpStatus()
             .PostJsonAsync(schedule);
+
         var content = await actual.GetJsonAsync<ScheduledActivityResponse>();
 
         actual.StatusCode.Should().Be((int)HttpStatusCode.Created);
         actual.Headers.Should().Contain(header => header.Name == "Location" && header.Value.Contains(request.Id.ToString()));
         content.ActivityId.Should().Be((Guid)schedule.Id);
+    }
+
+    [Fact]
+    public async Task Scheduling_Existing_Activity_For_Existing_Workers_Should_Be_Ok()
+    {
+        var request = new CreateWorkerRequest() { Name = "A" };
+        var response = await _client.Request("/api/workers").PostJsonAsync(request).ReceiveJson();
+
+        var activity = new CreateActivityRequest() { ActivityType = "Component", FinishDate = new DateTime(2022, 10, 11), StartDate = new DateTime(2022, 10, 10), Id = Guid.NewGuid() };
+        var createResponse = await _client.Request("/api/activities").PostJsonAsync(activity).ReceiveJson();
+
+        var scheduleRequest = new AssignExistentActivityRequest()
+        {
+            ActivityId = Guid.Parse(createResponse.id),
+            WorkerIds = new List<Guid>() { Guid.Parse(response.id) },
+        };
+
+        var actual = await _client.Request("/api/activities/schedule")
+            .PatchJsonAsync(scheduleRequest);
+
+        var content = await actual.GetJsonAsync<AssignedActivityResponse>();
+
+        actual.StatusCode.Should().Be((int)HttpStatusCode.Accepted);
+        content.Id.Should().Be(scheduleRequest.ActivityId);
     }
 
     [Fact]
@@ -60,7 +86,7 @@ public class ActivitiesControllerTests
         var id = response.id;
         var otherId = otherResponse.id;
 
-        var schedule = new ScheduleActivityRequest()
+        var schedule = new ScheduleNewActivityRequest()
         {
             Id = Guid.NewGuid(),
             StartDate = new DateTime(2022, 08, 08, 10, 10, 00),

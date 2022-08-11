@@ -20,7 +20,7 @@ public class Worker : IActivityWorker
             if (_activities.Any(x => x.Start < moment && x.Finish > moment))
                 return Status.Working;
 
-            if (_activities.Any(x => x.Finish < moment && x.FinishRestingDate > DateTime.Now))
+            if (_activities.Any(x => x.Finish < moment && x.FinishRestingDate > moment))
                 return Status.Recharging;
 
             return Status.Idle;
@@ -46,6 +46,9 @@ public class Worker : IActivityWorker
 
         if (_activities.Any(act => act.Overlaps(activity)))
             return new WorksInResult(DomainErrors.OverlappingActivities, activity);
+
+        if(_activities.Any(act => act.OverlapsByRest(activity)))
+            return new WorksInResult(DomainErrors.ActivityScheduledInRestTime, activity);
 
         _activities.Add(activity);
         var result = activity.HaveParticipant(this);
