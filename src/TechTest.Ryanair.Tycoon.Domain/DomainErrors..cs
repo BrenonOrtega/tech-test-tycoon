@@ -12,4 +12,7 @@ public class DomainErrors : BaseError
     public static readonly Error InvalidActivityAssignment = Create("INVALID_ACTIVITY_ASSIGNMENT", "Cannot Assign more than one worker to component activity.");
     public static readonly Error ActivityNotAssignedToWorker = Create("INVALID_ACTIVITY_UNASSIGNMENT", "Cannot unnassign activity that is not assigned to worker");
     public static readonly Error ActivityScheduledInRestTime = Create("SCHEDULING_DURING_REST", "Cannot assign activity during worker rechargeTime");
+    public static readonly Error InvalidReeschedulingDates = Create("INVALID_REESCHEDULING_DATES", "Cannot reeschedule an activity with a start date greather than end date");
+    public static readonly Error InvalidReeschedulingWorkers = Create("INVALID_REESCHEDULING_WORKERS", "Workers to reeschedule does not match to original assignment.");
+    
 }

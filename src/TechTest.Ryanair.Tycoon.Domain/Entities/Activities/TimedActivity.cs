@@ -29,21 +29,22 @@ namespace TechTest.Ryanair.Tycoon.Domain.Entities
 
         public bool Overlaps(TimedActivity other)
         {
-            var otherStartsAfter = Finish <= other.Start && Start < other.Start;
+            var otherStartsAfter = StartsAfter(other.Start);
 
-            var finishesBefore = other.Finish <= Start && other.Start < Start;
-
-            return !(otherStartsAfter || finishesBefore);
+            var finishesBefore = EndsAfter(other.Start, other.Finish);
+            return IsOverlapping(otherStartsAfter, finishesBefore);
         }
+
+        private static bool IsOverlapping(bool otherStartsAfter, bool finishesBefore) => !(otherStartsAfter || finishesBefore);
 
         public bool OverlapsByRest(TimedActivity other)
         {
-            var otherStartsAfter = FinishRestingDate <= other.Start && Start < other.Start;
+            var otherStartsAfter = StartsAfterRest(other.Start);
+            var finishesBefore = EndsAfterRest(other.Start, other.FinishRestingDate);
 
-            var finishesBefore = other.FinishRestingDate <= Start && other.Start < Start;
-
-            return !(otherStartsAfter || finishesBefore);
+            return IsOverlapping(otherStartsAfter, finishesBefore);
         }
+
 
         public virtual Result HaveParticipant(Worker worker)
         {
@@ -54,6 +55,31 @@ namespace TechTest.Ryanair.Tycoon.Domain.Entities
             return Result.Success();
         }
 
+        public Result Reeschedule(DateTime newStartDate, DateTime newEndDate, IEnumerable<Worker> workers)
+        {
+            if (newStartDate > newEndDate)
+                return Result.Fail(DomainErrors.InvalidReeschedulingDates);
+
+            if (WorkersDoesntMatch(workers))
+                return Result.Fail(DomainErrors.InvalidReeschedulingWorkers);
+
+            var cannotAttend = workers.Any(x => x.CannotWorkNewShift(Id, newStartDate, newEndDate));
+
+            if (cannotAttend)
+                return Result.Fail(DomainErrors.OverlappingActivities);
+
+            Start = newStartDate;
+            Finish = newEndDate;
+
+            foreach (var worker in workers)
+                worker.GetNewShift(this);
+
+            return Result.Success();
+        }
+
+        private bool WorkersDoesntMatch(IEnumerable<Worker> workers) 
+            => workers.Count() != _workers.Count || workers.All(x => _workers.Contains(x.Id)) is false;
+
         internal virtual Result WorksNoMore(Worker worker)
         {
             if (_workers.Remove(worker.Id))
@@ -61,6 +87,13 @@ namespace TechTest.Ryanair.Tycoon.Domain.Entities
 
             return Result.Fail(DomainErrors.InconsistentWorkerInActivity);
         }
+
+        internal bool StartsAfter(DateTime otherStart) => Finish <= otherStart && Start < otherStart;
+        internal bool EndsAfter(DateTime otherStart, DateTime otherEnd) => otherEnd <= Start && otherStart < Start;
+        internal bool WouldOverLap(DateTime startDate, DateTime endDate) => IsOverlapping(StartsAfter(startDate), EndsAfter(startDate, endDate));
+        internal bool StartsAfterRest(DateTime otherStart) => FinishRestingDate <= otherStart && Start < otherStart;
+        internal bool EndsAfterRest(DateTime otherStart, DateTime otherEndRestingDate) => otherEndRestingDate <= Start && otherStart < Start;
+        internal bool WouldOverLapRest(DateTime startDate, DateTime endRestDate) => IsOverlapping(StartsAfterRest(startDate), EndsAfterRest(startDate, endRestDate));
 
         public bool Equals(TimedActivity? other)
         {
@@ -97,7 +130,7 @@ namespace TechTest.Ryanair.Tycoon.Domain.Entities
         }
 
         public static readonly TimedActivity Null = new NullActivity();
-        private class NullActivity : TimedActivity
+        private sealed class NullActivity : TimedActivity
         {
             public NullActivity() : this(Guid.Empty, DateTime.MinValue, DateTime.MaxValue) { }
             private NullActivity(Guid id, DateTime start, DateTime finish) : base(id, start, finish) { }

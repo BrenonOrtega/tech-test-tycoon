@@ -86,6 +86,54 @@ namespace TechTest.Ryanair.Tycoon.UnitTests.Domain.Entities.Activities
         }
 
         [Fact]
+        public void Reescheduling_Without_Overlapping_Activity_Should_Pass()
+        {
+            // Given
+            var sut = new BuildMachineActivity(Guid.NewGuid(), DateTime.Today, DateTime.Today.AddHours(10));
+            var worker = new Worker(Guid.NewGuid(), "A");
+            var expectedStart = sut.Start.AddHours(5);
+            var expectedFinish = sut.Finish.AddMinutes(20);
+
+            worker.WorksIn(sut);
+
+            // When
+            var result = sut.Reeschedule(expectedStart, expectedFinish, new [] {worker});
+            
+            // Then
+            result.IsSuccess.Should().BeTrue();
+            sut.Workers.Should().Contain(worker.Id);
+            worker.Activities.Should().Contain(sut);
+            worker.Activities.Single().Finish.Should().Be(expectedFinish);
+            worker.Activities.Single().Start.Should().Be(expectedStart);
+        }
+
+        [Fact]
+        public void Reescheduling_With_Overlapping_Activity_Should_Fail()
+        {
+            var sut = new BuildMachineActivity(Guid.NewGuid(), DateTime.Today, DateTime.Today.AddHours(10));
+            var otherActivity = new BuildMachineActivity(Guid.NewGuid(), sut.FinishRestingDate.AddMinutes(2), sut.FinishRestingDate.AddMinutes(10));
+            var worker = new Worker(Guid.NewGuid(), "A");
+
+            worker.WorksIn(sut).WorksIn(otherActivity);
+
+            var expectedStart = sut.Start;
+            var expectedFinish = sut.Finish;
+
+            var newStart = expectedStart.AddHours(5);
+            var newEnd = expectedFinish.AddHours(6);
+
+            var result = sut.Reeschedule(newStart, newEnd, new [] { worker });
+
+            result.IsFailed.Should().BeTrue();
+
+            sut.Start.Should().Be(expectedStart);
+            sut.Finish.Should().Be(expectedFinish);
+
+            sut.Start.Should().NotBe(newStart);
+            sut.Finish.Should().NotBe(newEnd);
+        }
+
+        [Fact]
         public void Duration_Should_Be_Finish_Less_Start_Date()
         {
             var start = new DateTime(2022, 08, 10, 10, 15, 00);

@@ -78,4 +78,17 @@ public class Worker : IActivityWorker
 
         return Result.Fail(DomainErrors.ActivityNotAssignedToWorker);
     }
+
+    public bool CannotWorkNewShift(Guid activityId, DateTime startDate, DateTime endDate)
+    {
+        var cannotAttend = _activities.Where(x => x.Id != activityId).Any(x => x.WouldOverLapRest(startDate, endDate));
+
+        return cannotAttend;
+    }
+
+    internal void GetNewShift(TimedActivity activity)
+    {
+        Unassign(_activities.Single(x => x.Id == activity.Id));
+        WorksIn(activity);
+    }
 }
