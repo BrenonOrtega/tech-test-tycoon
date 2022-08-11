@@ -58,10 +58,10 @@ namespace TechTest.Ryanair.Tycoon.Domain.Entities
         public Result Reeschedule(DateTime newStartDate, DateTime newEndDate, IEnumerable<Worker> workers)
         {
             if (newStartDate > newEndDate)
-                return Result.Fail(DomainErrors.InvalidReeschedulingDates);
+                return Result.Fail(DomainErrors.InvalidDatesForReescheduling);
 
             if (WorkersDoesntMatch(workers))
-                return Result.Fail(DomainErrors.InvalidReeschedulingWorkers);
+                return Result.Fail(DomainErrors.InvalidWorkersForReescheduling);
 
             var cannotAttend = workers.Any(x => x.CannotWorkNewShift(Id, newStartDate, newEndDate));
 
