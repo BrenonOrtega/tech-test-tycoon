@@ -119,6 +119,59 @@ public class WorkerTests
     }
 
     [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    [InlineData(4)]
+    [InlineData(5)]
+    public void Worker_WorkPeriod_Filtered_By_Time_Period_Should_Work(int count)
+    {
+        var sut = new Worker(name: "A", id: Guid.NewGuid());
+
+        var initialDateTime = new DateTime(2022, 8, 12, 1, 0, 0);
+        var startDate = initialDateTime;
+        var finalDateTime = startDate;
+
+        for (var i=0; i <= count; i++)
+        {
+            var activity = OneHourActivityGenerator(startDate);
+            startDate = activity.FinishRestingDate;
+            sut.WorksIn(activity);
+            finalDateTime = activity.Finish;
+        }
+
+        var actualWorkTime = sut.WorkTimeBetween(initialDateTime, finalDateTime);
+
+        var expected = sut.Activities.Select(x => x.Duration).Aggregate(TimeSpan.Zero, (initial, next) => initial + next);
+        actualWorkTime.Should().Be(expected);
+
+        static TimedActivity OneHourActivityGenerator(DateTime startDate)
+            => new BuildMachineActivity(Guid.NewGuid(), startDate.AddSeconds(1), startDate.AddHours(1));
+    }
+
+    [Fact]
+    public void Getting_Work_Time_Between_Should_Only_Return_Period_Between_Time_Range()
+    {
+        var sut = new Worker(name: "A", id: Guid.NewGuid());
+
+        var initialDateTime = new DateTime(2022, 8, 12);
+        var finalDateTime = new DateTime(2022, 8, 12, 15, 0, 0);
+
+        var activity = new BuildComponentActivity(Guid.NewGuid(), initialDateTime.AddHours(-10), initialDateTime.AddHours(2));
+        var activityB = new BuildComponentActivity(Guid.NewGuid(), activity.FinishRestingDate, finalDateTime.AddHours(3));
+
+        var restTime = activity.RestPeriod;
+
+        sut.WorksIn(activity).WorksIn(activityB);
+
+        var actualWorkTime = sut.WorkTimeBetween(initialDateTime, finalDateTime);
+
+        var expected = finalDateTime - initialDateTime - restTime;
+
+        actualWorkTime.Should().Be(expected);
+    }
+
+    [Theory]
     [MemberData(nameof(StatusGenerator))]
     public void Worker_Status_Should_Depend_On_Activities(Worker.Status expectedStatus, TimedActivity activity)
     {

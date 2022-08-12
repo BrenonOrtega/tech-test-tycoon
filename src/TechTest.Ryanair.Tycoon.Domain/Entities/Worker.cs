@@ -98,4 +98,20 @@ public class Worker : IActivityWorker
         if (worksInResult.IsFailed)
             throw new InvalidOperationException($"Exception happened when updating schedule {activity.Id} for worker {Id}.");
     }
+
+    public TimeSpan WorkTimeBetween(DateTime initialDate, DateTime finalDate)
+    {
+        var overlaps = Activities.Where(x => x.WouldOverLap(initialDate, finalDate));
+
+        var workTime = overlaps.Select(activity => EndPeriod(finalDate, activity) - StartPeriod(initialDate, activity))
+            .Aggregate(TimeSpan.Zero, (initial, next) => initial + next);
+
+        return workTime;
+
+        static DateTime StartPeriod(DateTime initialDate, TimedActivity activity) 
+            => activity.Start < initialDate ? initialDate: activity.Start;
+
+        static DateTime EndPeriod(DateTime finalDate, TimedActivity activity) 
+            => activity.Finish > finalDate ? finalDate : activity.Finish;
+    }
 }
