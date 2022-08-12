@@ -50,7 +50,6 @@ internal class UpdateActivityDatesUseCase : IUpdateActivityDatesUseCase
         }
 
         await _unitOfWork.SaveAsync();
-        return Result.Success<UpdatedActivityDatesResponse>(new UpdatedActivityDatesResponse(activity.Id));
-
+        return Result.Success(new UpdatedActivityDatesResponse(activity.Id, activity.Start, activity.Finish));
     }
 }

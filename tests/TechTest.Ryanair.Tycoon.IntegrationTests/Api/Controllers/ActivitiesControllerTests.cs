@@ -6,6 +6,7 @@ using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.CreateActivity;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.GetActivityById;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity.AssignExistent;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity.ScheduleNew;
+using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.UpdateDates;
 using TechTest.Ryanair.Tycoon.Domain;
 using TechTest.Ryanair.Tycoon.IntegrationTests.Fixtures;
 
@@ -166,5 +167,32 @@ public class ActivitiesControllerTests
 
         // Then
         actual.StatusCode.Should().Be((int)HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task Updating_Scheduled_Activity_Should_Be_Succesfull()
+    {
+        var request = new CreateWorkerRequest() { Name = "A" };
+        await _client.Request("/api/workers").PostJsonAsync(request).ReceiveJson();
+
+        var activity = new CreateActivityRequest() { ActivityType = "Component", FinishDate = new DateTime(2022, 10, 11), StartDate = new DateTime(2022, 10, 10), Id = Guid.NewGuid() };
+        var createResponse = await _client.Request("/api/activities").PostJsonAsync(activity).ReceiveJson();
+
+        var updateRequest = new UpdateActivityDatesRequest()
+        {
+            Id = Guid.Parse(createResponse.id),
+            NewStartDate = activity.StartDate.AddHours(-1),
+            NewFinishDate = activity.FinishDate.AddMinutes(2)
+        };
+
+        var actual = await _client.Request("/api/activities")
+            .PatchJsonAsync(updateRequest);
+
+        var content = await actual.GetJsonAsync<UpdatedActivityDatesResponse>();
+
+        actual.StatusCode.Should().Be((int)HttpStatusCode.OK);
+        content.Id.Should().Be(updateRequest.Id);
+        content.StartDate.Should().Be(updateRequest.NewStartDate);
+        content.FinishDate.Should().Be(updateRequest.NewFinishDate);
     }
 }

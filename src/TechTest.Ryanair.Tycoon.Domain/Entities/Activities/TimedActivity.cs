@@ -63,7 +63,7 @@ namespace TechTest.Ryanair.Tycoon.Domain.Entities
             if (WorkersDoesntMatch(workers))
                 return Result.Fail(DomainErrors.InvalidWorkersForReescheduling);
 
-            var cannotAttend = workers.Any(x => x.CannotWorkNewShift(Id, newStartDate, newEndDate));
+            var cannotAttend = workers.Any(x => x.CannotWorkNewShift(Id, newStartDate, newEndDate + RestPeriod));
 
             if (cannotAttend)
                 return Result.Fail(DomainErrors.OverlappingActivities);

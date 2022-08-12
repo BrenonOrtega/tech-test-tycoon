@@ -4,6 +4,7 @@ using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.GetActivityById;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity.AssignExistent;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity.ScheduleNew;
+using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.UpdateDates;
 using TechTest.Ryanair.Tycoon.Application.WorkerUseCases.CreateWorker;
 using TechTest.Ryanair.Tycoon.Application.WorkerUseCases.GetWorkerById;
 using TechTest.Ryanair.Tycoon.Domain.Factories;
@@ -19,6 +20,7 @@ public static class ServiceCollectionExtensions
         services.AddGetActivityById();
         services.AddBaseGetActivityById();
         services.AddAssignActivity();
+        services.AddUpdateActivityDates();
 
         services.AddCreateWorker();
         services.AddGetWorkerById();
@@ -53,6 +55,10 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IScheduleActivityBase, ScheduleActivityBase>();
         return services.AddScoped<IAssignExistentActivityUseCase, AssignExistentActivityUseCase>();
+    }
+    public static IServiceCollection AddUpdateActivityDates(this IServiceCollection services)
+    {
+        return services.AddScoped<IUpdateActivityDatesUseCase, UpdateActivityDatesUseCase>();
     }
 
     public static IServiceCollection AddCreateWorker(this IServiceCollection services)

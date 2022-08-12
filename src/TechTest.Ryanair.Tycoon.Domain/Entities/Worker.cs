@@ -9,18 +9,18 @@ public class Worker : IActivityWorker
     public Guid Id { get; private set; }
     public string Name { get; private set; }
 
-    private readonly HashSet<TimedActivity> _activities = new();
-    public ImmutableHashSet<TimedActivity> Activities => _activities.ToImmutableHashSet();
+    private readonly Dictionary<Guid, TimedActivity> _activities = new();
+    public ImmutableHashSet<TimedActivity> Activities => _activities.Values.ToImmutableHashSet();
 
     public Status ActualStatus
     {
         get
         {
             var moment = DateTime.Now;
-            if (_activities.Any(x => x.Start < moment && x.Finish > moment))
+            if (Activities.Any(x => x.Start < moment && x.Finish > moment))
                 return Status.Working;
 
-            if (_activities.Any(x => x.Finish < moment && x.FinishRestingDate > moment))
+            if (Activities.Any(x => x.Finish < moment && x.FinishRestingDate > moment))
                 return Status.Recharging;
 
             return Status.Idle;
@@ -41,16 +41,16 @@ public class Worker : IActivityWorker
         if (activity is null || activity == TimedActivity.Null)
             return new WorksInResult(DomainErrors.TryWorkingInInvalidActivity, TimedActivity.Null);
 
-        if (_activities.Contains(activity))
+        if (Activities.Contains(activity))
             return new WorksInResult(DomainErrors.AlreadyWorksInActivity, activity);
 
-        if (_activities.Any(act => act.Overlaps(activity)))
+        if (Activities.Any(act => act.Overlaps(activity)))
             return new WorksInResult(DomainErrors.OverlappingActivities, activity);
 
-        if(_activities.Any(act => act.OverlapsByRest(activity)))
+        if(Activities.Any(act => act.OverlapsByRest(activity)))
             return new WorksInResult(DomainErrors.ActivityScheduledInRestTime, activity);
 
-        _activities.Add(activity);
+        _activities.Add(activity.Id, activity);
         var result = activity.HaveParticipant(this);
 
         if (result.IsFailed)
@@ -70,7 +70,7 @@ public class Worker : IActivityWorker
 
     public Result Unassign(TimedActivity activity)
     {
-        if(_activities.Remove(activity))
+        if(_activities.Remove(activity.Id, out _))
         {
             activity.WorksNoMore(this);
             return Result.Success();
@@ -81,14 +81,21 @@ public class Worker : IActivityWorker
 
     public bool CannotWorkNewShift(Guid activityId, DateTime startDate, DateTime endDate)
     {
-        var cannotAttend = _activities.Where(x => x.Id != activityId).Any(x => x.WouldOverLapRest(startDate, endDate));
+        var cannotAttend = _activities.Where(x => x.Key != activityId).Any(x => x.Value.WouldOverLapRest(startDate, endDate));
 
         return cannotAttend;
     }
 
     internal void GetNewShift(TimedActivity activity)
     {
-        Unassign(_activities.Single(x => x.Id == activity.Id));
-        WorksIn(activity);
+        var unassignment = Unassign(_activities[activity.Id]);
+
+        if (unassignment.IsFailed)
+            throw new InvalidOperationException($"Exception happened when updating schedule {activity.Id} for worker {Id}.");
+
+        var worksInResult = WorksIn(activity);
+
+        if (worksInResult.IsFailed)
+            throw new InvalidOperationException($"Exception happened when updating schedule {activity.Id} for worker {Id}.");
     }
 }

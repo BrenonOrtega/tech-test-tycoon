@@ -8,6 +8,7 @@ using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.GetActivityById;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity.ScheduleNew;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity.AssignExistent;
 using Awarean.Sdk.Result;
+using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.UpdateDates;
 
 namespace TechTest.Ryanair.Tycoon.Api.Controllers;
 
@@ -19,16 +20,18 @@ public class ActivitiesController : ControllerBase
     private readonly IScheduleNewActivityUseCase _scheduleNew;
     private readonly ICreateActivityUseCase _createActivity;
     private readonly IGetActivityByIdUseCase _getById;
+    private readonly IUpdateActivityDatesUseCase _updateActivityDates;
 
-    public ActivitiesController(ILogger<ActivitiesController> logger, IScheduleNewActivityUseCase scheduleNew, IAssignExistentActivityUseCase assignExistent,
-
-        ICreateActivityUseCase createActivity, IGetActivityByIdUseCase getById)
+    public ActivitiesController(ILogger<ActivitiesController> logger, IScheduleNewActivityUseCase scheduleNew,
+        IAssignExistentActivityUseCase assignExistent, ICreateActivityUseCase createActivity, IGetActivityByIdUseCase getById,
+        IUpdateActivityDatesUseCase updateActivityDates)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _assignExistent = assignExistent ?? throw new ArgumentNullException(nameof(assignExistent));
         _scheduleNew = scheduleNew ?? throw new ArgumentNullException(nameof(scheduleNew));
         _createActivity = createActivity ?? throw new ArgumentNullException(nameof(createActivity));
         _getById = getById ?? throw new ArgumentNullException(nameof(getById));
+        _updateActivityDates = updateActivityDates ?? throw new ArgumentNullException(nameof(updateActivityDates));
     }
 
     [HttpPost("schedule")]
@@ -96,13 +99,37 @@ public class ActivitiesController : ControllerBase
 
         if (result.IsFailed)
         {
-            _logger.LogInformation("Failed creating activity of Type {type}, starting {startDate} - ending {endData}. Error: {error}",
+            _logger.LogInformation("Failed creating activity of Type {type}, starting {startDate} - ending {endDate}. Error: {error}",
                 request.ActivityType, request.StartDate, request.FinishDate, JsonSerializer.Serialize(result.Error));
 
             return BadRequest(result.Error);
         }
 
         return CreatedAtAction(nameof(Get), new { result.Value.Id }, result.Value);
+    }
+
+    [HttpPatch]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    public async Task<IActionResult> Patch([FromBody] UpdateActivityDatesRequest request)
+    {
+        if (request is null)
+            return BadRequest(Error.Create("INVALID_REQUEST", "Received an invalid request when posting an activity."));
+
+        var command = request.ToCommand();
+
+        var result = await _updateActivityDates.HandleAsync(command);
+
+        if (result.IsFailed)
+        {
+            _logger.LogInformation("Failed updating activity {activityId} dates for starting date {startDate} - ending date {endDate}. Error: {error}",
+                request.Id, request.NewStartDate, request.NewFinishDate, JsonSerializer.Serialize(result.Error));
+
+            return BadRequest(result.Error);
+        }
+
+        return Ok(result.Value);
     }
 
     [HttpGet("{id}")]
