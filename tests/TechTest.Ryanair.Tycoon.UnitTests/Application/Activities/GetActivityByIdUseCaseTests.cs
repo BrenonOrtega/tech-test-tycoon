@@ -1,9 +1,10 @@
 ﻿using Awarean.Sdk.Result;
 using TechTest.Ryanair.Tycoon.Application;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.GetActivityById;
+using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.GetActivityById.Base;
 using TechTest.Ryanair.Tycoon.Domain.Entities;
 
-namespace TechTest.Ryanair.Tycoon.UnitTests.Application;
+namespace TechTest.Ryanair.Tycoon.UnitTests.Application.Activities;
 
 public class GetActivityByIdUseCaseTests
 {

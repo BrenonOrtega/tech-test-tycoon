@@ -4,7 +4,7 @@ using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity.Sc
 using TechTest.Ryanair.Tycoon.Domain.Entities;
 using TechTest.Ryanair.Tycoon.Domain.Repositories;
 
-namespace TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity;
+namespace TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity.Base;
 
 internal class ScheduleActivityBase : IScheduleActivityBase
 {
@@ -32,10 +32,10 @@ internal class ScheduleActivityBase : IScheduleActivityBase
 
         var scheduleResult = await ScheduleForWorkers(command.Activity, workers);
 
-        if(scheduleResult.IsFailed)
+        if (scheduleResult.IsFailed)
         {
             await RollbackWorkersAsync(command.Activity, workers);
-           
+
             return Result.Fail<TimedActivity>(scheduleResult.Error);
         }
 

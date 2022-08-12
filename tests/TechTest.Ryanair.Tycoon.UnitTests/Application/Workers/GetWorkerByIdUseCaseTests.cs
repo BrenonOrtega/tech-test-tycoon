@@ -5,7 +5,7 @@ using TechTest.Ryanair.Tycoon.Domain.Entities;
 using TechTest.Ryanair.Tycoon.Domain.Repositories;
 using TechTest.Ryanair.Tycoon.Infra.Repositories;
 
-namespace TechTest.Ryanair.Tycoon.UnitTests.Application;
+namespace TechTest.Ryanair.Tycoon.UnitTests.Application.Workers;
 
 public class GetWorkerByIdUseCaseTests
 {

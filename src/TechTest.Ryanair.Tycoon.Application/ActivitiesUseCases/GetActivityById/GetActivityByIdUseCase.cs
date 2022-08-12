@@ -1,4 +1,5 @@
 ﻿using Awarean.Sdk.Result;
+using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.GetActivityById.Base;
 using TechTest.Ryanair.Tycoon.Application.Dtos;
 
 namespace TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.GetActivityById;

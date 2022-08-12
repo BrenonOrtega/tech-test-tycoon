@@ -4,7 +4,7 @@ using TechTest.Ryanair.Tycoon.Domain;
 using TechTest.Ryanair.Tycoon.Domain.Entities;
 using TechTest.Ryanair.Tycoon.Domain.Repositories;
 
-namespace TechTest.Ryanair.Tycoon.UnitTests.Application;
+namespace TechTest.Ryanair.Tycoon.UnitTests.Application.Activities;
 
 public class UpdateActivityUseCaseTests
 {

@@ -1,6 +1,8 @@
 ﻿using Awarean.Sdk.Result;
 using Microsoft.Extensions.Logging;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.GetActivityById;
+using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.GetActivityById.Base;
+using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity.Base;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity.ScheduleNew;
 using TechTest.Ryanair.Tycoon.Domain.Repositories;
 

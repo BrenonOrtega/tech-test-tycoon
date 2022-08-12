@@ -1,10 +1,14 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.CreateActivity;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.GetActivityById;
+using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.GetActivityById.Base;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity.AssignExistent;
+using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity.Base;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity.ScheduleNew;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.UpdateDates;
+using TechTest.Ryanair.Tycoon.Application.WorkerUseCases;
 using TechTest.Ryanair.Tycoon.Application.WorkerUseCases.CreateWorker;
 using TechTest.Ryanair.Tycoon.Application.WorkerUseCases.GetWorkerById;
 using TechTest.Ryanair.Tycoon.Domain.Factories;
@@ -13,7 +17,7 @@ namespace TechTest.Ryanair.Tycoon.Application.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddUseCases(this IServiceCollection services)
+    public static IServiceCollection AddUseCases(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScheduleActivity();
         services.AddCreateActivity();
