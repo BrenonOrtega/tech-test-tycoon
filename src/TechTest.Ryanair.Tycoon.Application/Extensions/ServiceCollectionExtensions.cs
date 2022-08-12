@@ -8,8 +8,8 @@ using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity.As
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity.Base;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity.ScheduleNew;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.UpdateDates;
-using TechTest.Ryanair.Tycoon.Application.WorkerUseCases;
 using TechTest.Ryanair.Tycoon.Application.WorkerUseCases.CreateWorker;
+using TechTest.Ryanair.Tycoon.Application.WorkerUseCases.GetBusiest;
 using TechTest.Ryanair.Tycoon.Application.WorkerUseCases.GetWorkerById;
 using TechTest.Ryanair.Tycoon.Domain.Factories;
 
@@ -28,6 +28,9 @@ public static class ServiceCollectionExtensions
 
         services.AddCreateWorker();
         services.AddGetWorkerById();
+        services.AddGetBusiestWorkers();
+
+        services.Configure<GetBusiestWorkersOptions>(configuration.GetSection(nameof(GetBusiestWorkersOptions)));
 
         services.AddFactories();
 
@@ -47,6 +50,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddGetActivityById(this IServiceCollection services)
     {
+        services.AddBaseGetActivityById();
         return services.AddScoped<IGetActivityByIdUseCase, GetActivityByIdUseCase>();
     }
 
@@ -57,6 +61,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddAssignActivity(this IServiceCollection services)
     {
+        services.AddBaseGetActivityById();
         services.AddScoped<IScheduleActivityBase, ScheduleActivityBase>();
         return services.AddScoped<IAssignExistentActivityUseCase, AssignExistentActivityUseCase>();
     }
@@ -73,6 +78,11 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddGetWorkerById(this IServiceCollection services)
     {
         return services.AddScoped<IGetWorkerByIdUseCase, GetWorkerByIdUseCase>();
+    }
+
+    public static IServiceCollection AddGetBusiestWorkers(this IServiceCollection services)
+    {
+        return services.AddScoped<IGetBusiestWorkersUseCase, GetBusiestWorkersUseCase>();
     }
 
     public static IServiceCollection AddFactories(this IServiceCollection services)

@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using TechTest.Ryanair.Tycoon.Application.Extensions;
-using TechTest.Ryanair.Tycoon.Application.WorkerUseCases;
+using TechTest.Ryanair.Tycoon.Application.WorkerUseCases.GetBusiest;
+using TechTest.Ryanair.Tycoon.Domain.Entities;
 using TechTest.Ryanair.Tycoon.Domain.Repositories;
 using TechTest.Ryanair.Tycoon.Infra.Extensions;
-using TechTest.Ryanair.Tycoon.UnitTests.Application.Workers;
 
 namespace TechTest.Ryanair.Tycoon.IntegrationTests.Application;
 
@@ -17,7 +18,7 @@ public class GetBusiestWorkersUseCaseTests
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string>()
             {
-                { $"{nameof(WorkerUseCaseOptions)}:GetBusiestQuantityDefault", "10" }
+                { $"{nameof(GetBusiestWorkersOptions)}:{nameof(GetBusiestWorkersOptions.GetQuantity)}", "10" }
             })
             .Build();
 
@@ -28,8 +29,12 @@ public class GetBusiestWorkersUseCaseTests
             .BuildServiceProvider();
 
         var repo = provider.GetRequiredService<IWorkerRepository>();
-        var sut = (IGetBusiestWorkersUseCase)new GetBusiestWorkersUseCase(repo);
+        var options = provider.GetRequiredService<IOptionsSnapshot<GetBusiestWorkersOptions>>();
+        var sut = (IGetBusiestWorkersUseCase)new GetBusiestWorkersUseCase(repo, options);
 
-        var result = await sut.HandleAsync(new GetBusiestWorkersCommand() { Count = 10 }); ;
+        var result = await sut.HandleAsync(new GetBusiestWorkersCommand(10, new DateTime(2022, 10, 10), new DateTime(2022, 10, 11)));
+
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().BeEquivalentTo(Enumerable.Empty<Worker>());
     }
 }

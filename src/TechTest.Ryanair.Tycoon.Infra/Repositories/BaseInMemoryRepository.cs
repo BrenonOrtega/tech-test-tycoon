@@ -62,11 +62,11 @@ public abstract class BaseInMemoryRepository<TEntity, TLogger> : IBaseRepository
         return Result.Success();
     }
 
-    public async Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> filter = null)
+    public async Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> filter = null, int skip = 0, int take = 100)
     {
         if (filter is null)
             return Data.Select(x => x.Value);
 
-        return Data.Select(x => x.Value).AsQueryable().Where(filter);
+        return Data.Values.AsQueryable().Where(filter).Skip(skip).Take(take);
     }
 }

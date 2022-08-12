@@ -18,7 +18,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddLogging()
     .AddInfrastructure()
-    .AddUseCases();
+    .AddUseCases(builder.Configuration);
 
 var app = builder.Build();
 
