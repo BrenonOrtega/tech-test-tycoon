@@ -7,8 +7,9 @@ namespace TechTest.Ryanair.Tycoon.Domain.Entities
 {
     public abstract class TimedActivity : IEquatable<TimedActivity>
     {
-        public virtual Guid Id { get; protected set; }
         protected readonly HashSet<Guid> _workers = new();
+
+        public virtual Guid Id { get; protected set; }
         public virtual ImmutableHashSet<Guid> Workers => _workers.ToImmutableHashSet();
         public virtual DateTime Start { get; protected set; }
         public virtual DateTime Finish { get; protected set; }
@@ -30,12 +31,10 @@ namespace TechTest.Ryanair.Tycoon.Domain.Entities
         public bool Overlaps(TimedActivity other)
         {
             var otherStartsAfter = StartsAfter(other.Start);
-
             var finishesBefore = EndsAfter(other.Start, other.Finish);
             return IsOverlapping(otherStartsAfter, finishesBefore);
         }
 
-        private static bool IsOverlapping(bool otherStartsAfter, bool finishesBefore) => !(otherStartsAfter || finishesBefore);
 
         public bool OverlapsByRest(TimedActivity other)
         {
@@ -77,9 +76,6 @@ namespace TechTest.Ryanair.Tycoon.Domain.Entities
             return Result.Success();
         }
 
-        private bool WorkersDoesntMatch(IEnumerable<Worker> workers) 
-            => workers.Count() != _workers.Count || workers.All(x => _workers.Contains(x.Id)) is false;
-
         internal virtual Result WorksNoMore(Worker worker)
         {
             if (_workers.Remove(worker.Id))
@@ -94,6 +90,11 @@ namespace TechTest.Ryanair.Tycoon.Domain.Entities
         internal bool StartsAfterRest(DateTime otherStart) => FinishRestingDate <= otherStart && Start < otherStart;
         internal bool EndsAfterRest(DateTime otherStart, DateTime otherEndRestingDate) => otherEndRestingDate <= Start && otherStart < Start;
         internal bool WouldOverLapRest(DateTime startDate, DateTime endRestDate) => IsOverlapping(StartsAfterRest(startDate), EndsAfterRest(startDate, endRestDate));
+        
+        private static bool IsOverlapping(bool otherStartsAfter, bool finishesBefore) => !(otherStartsAfter || finishesBefore);
+
+        private bool WorkersDoesntMatch(IEnumerable<Worker> workers) 
+            => workers.Count() != _workers.Count || workers.All(x => _workers.Contains(x.Id)) is false;
 
         public bool Equals(TimedActivity? other)
         {
