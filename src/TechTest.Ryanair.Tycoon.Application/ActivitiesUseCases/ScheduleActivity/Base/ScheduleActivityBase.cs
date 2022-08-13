@@ -20,7 +20,7 @@ internal class ScheduleActivityBase : IScheduleActivityBase
     public async Task<Result<TimedActivity>> HandleAsync(ScheduleActivityCommand command)
     {
         if (command is null)
-            return Result.Fail<TimedActivity>(ApplicationErrors.InvalidCommand);
+            return Result.Fail<TimedActivity>(ApplicationErrors.NullCommand);
 
         var validation = command.Validate();
         if (validation.IsFailed)
@@ -29,6 +29,10 @@ internal class ScheduleActivityBase : IScheduleActivityBase
         var workers = await _unitOfWork.WorkerRepository.GetWorkersAsync(command.AssignedWorkers);
         if (workers.Any() is false)
             return Result.Fail<TimedActivity>(ApplicationErrors.WorkerNotFound);
+
+        var activity = await _unitOfWork.ActivityRepository.GetAsync(command.Activity.Id);
+        if (activity != TimedActivity.Null)
+            return Result.Fail<TimedActivity>(ApplicationErrors.DuplicatedId);
 
         var scheduleResult = await ScheduleForWorkers(command.Activity, workers);
 
