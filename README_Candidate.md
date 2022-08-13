@@ -52,20 +52,27 @@ Applying Null Object pattern and Result Pattern to diminish the null handlings d
 The result pattern (Borrowed from functional programming and present in the library Awarean.Sdk.Result developed/maintained by me) is applied in operations to indicate success or failure, whenever a failure happens, we can handle it inside on of the application layers to present a friendly response to the user, or return it directly to indicate that a business constraint was violated instead of throwing exceptions which is costly, helping improve performance and informing errors in an idiomatic way, in case of success, we can leverage the generic nature of the lib to return the object containing relevant data of the operation, the library also enforces using null object pattern, so every object that can be returned using "Result.Fail<T>(T value)" should implement it, helping prevents null handling and possible null reference exceptions.
 
 The application layer was developed using principles from Use Case Driven development, the use cases reflect and should express what the application should be capable of, this way splitting the application in use case for workers and for activities, it was easy to build a solid foundation for the API, the application is responsible for validate that commands are valid, such as checking if the command is null, if the constraints to try executing an operation is valid and returning results that express the validation error. It only depends on abstractions that enables the use case to be executed, for example, when the AssignExistentActivityUseCase needs to get an activity for assigning to works, it does not need to duplicate the logic for getting an activity by id, it only needs to depend on the IGetActivityByIdUseCase to do its job of retrieving an activity, there's other examples inside the use cases.
+Observability was also taken into account, so every command that changes, adds or updates the application state is being logged using the default Microsoft ILogger<T> so implementing logs to seach engines (ElasticSearch, LogStash), databases (Postgres, SQL Server, etc), Cloud Providers (CloudWatch, Azure Monitor) can easily be implemented in infrastructure.
 
 The Api layer is the most simple, it only exposes the endpoints for receiving requests and translates them to Use Case Commands, it is only responsible to pass data to the Use Cases, the requests know its use cases and know how to turn themselves into the use case command, the command and the application layer does the validation, enabling to concentrate the invariant constrainst to be placed only in one place.
 
 The Ìnfrastructure is composed of in memory repositories that runs on a Dictionary<Guid, T> for each entity/aggregate abstracted upon a layer of repositories and unit of work exposed by the domain, this enables easily switching from an in memory data persistence to an actual database such as SQL Server, PostgreSql, MongoDb or DynamoDB or an Web Request to another service (in a microsservice based environment, message queue), For the application I Decided to focus more on TDD and DDD concepts, so I decided to use a basic and functional approach to the Infrastructure.
 
 ## Improvements
-- Implement actual data persistence (Relational with entity framework core/Dapper or Non Relational like DynamoDB and AWSSDK.DynamoDBV2).
+- Move some default values to configuration files and rewrites then to use the Options pattern.
+
+- Implement actual data persistence that can be configured in docker-compose (Relational with entity framework core/Dapper or Non Relational like DynamoDB and AWSSDK.DynamoDBV2).
 
 - Leverage the generic nature of the use cases to implement Mediator Pattern with Mediatr, decoupling API layer even more from the actual application.
+
+- Abstract common command validations to an "IUseCaseBase<T>" that implements the template method pattern enabling the removal of duplicated validations such as null command, invalid command.
 
 - Use Fluent Validation to decrease verbose and repetitive validations in Application Commands.
 
 - Adds More testing for extreme edge cases.
 
-- Run Sonarqube Scan
+- Run Sonarqube Scan in docker-compose
 
-- Add a pipeline to run tests.
+- Add a pipeline to run tests and get code coverage.
+
+- Adds Serilog with ELK Providers configured in docker-compose
