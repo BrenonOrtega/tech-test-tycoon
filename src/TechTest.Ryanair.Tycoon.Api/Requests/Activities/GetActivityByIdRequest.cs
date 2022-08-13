@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.GetActivityById;
 
-namespace TechTest.Ryanair.Tycoon.Api.Requests
+namespace TechTest.Ryanair.Tycoon.Api.Requests.Activities
 {
     public class GetActivityByIdRequest
     {

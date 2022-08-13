@@ -1,10 +1,12 @@
 ﻿using Awarean.Sdk.Result;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using TechTest.Ryanair.Tycoon.Api.Requests;
+using TechTest.Ryanair.Tycoon.Api.Requests.Workers;
 using TechTest.Ryanair.Tycoon.Application;
 using TechTest.Ryanair.Tycoon.Application.WorkerUseCases.CreateWorker;
+using TechTest.Ryanair.Tycoon.Application.WorkerUseCases.GetBusiest;
 using TechTest.Ryanair.Tycoon.Application.WorkerUseCases.GetWorkerById;
+using TechTest.Ryanair.Tycoon.Domain.Entities;
 
 namespace TechTest.Ryanair.Tycoon.Api.Controllers;
 
@@ -15,12 +17,14 @@ public class WorkersController : ControllerBase
     private readonly ILogger<WorkersController> _logger;
     private readonly ICreateWorkerUseCase _creator;
     private readonly IGetWorkerByIdUseCase _getById;
+    private readonly IGetBusiestWorkersUseCase _getBusiest;
 
-    public WorkersController(ILogger<WorkersController> logger, ICreateWorkerUseCase creator, IGetWorkerByIdUseCase getById)
+    public WorkersController(ILogger<WorkersController> logger, ICreateWorkerUseCase creator, IGetWorkerByIdUseCase getById, IGetBusiestWorkersUseCase useCase)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _creator = creator ?? throw new ArgumentNullException(nameof(creator));
         _getById = getById ?? throw new ArgumentNullException(nameof(getById));
+        _getBusiest = useCase ?? throw new ArgumentNullException(nameof(useCase));
     }
 
     [HttpPost]
@@ -54,6 +58,39 @@ public class WorkersController : ControllerBase
             return NotFound(result.Error);
 
         return Ok(result.Value);
+    }
+
+    [HttpGet("busiest/weekly-top-ten")]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    public async Task<IActionResult> GetWeeklyBusiest()
+    {
+        var result = await _getBusiest.HandleAsync(new GetWeeklyTopTenBusiestWorkersCommand());
+
+        if (result.IsFailed)
+        {
+            return NotFound(result.Error);
+        }
+
+        return  result.Value != Enumerable.Empty<Worker>() ? Ok(result.Value) : NotFound();
+    }
+
+    [HttpGet("busiest")]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    public async Task<IActionResult> GetBusiest([FromQuery]GetBusiestWorkersRequest request)
+    {
+        if (request is null)
+            return BadRequest(ApplicationErrors.NullCommand);
+
+        var result = await _getBusiest.HandleAsync(request.ToCommand());
+
+        if (result.IsFailed)
+        {
+            return NotFound(result.Error);
+        }
+
+        return result.Value != Enumerable.Empty<Worker>() ? Ok(result.Value) : NotFound();
     }
 
 }

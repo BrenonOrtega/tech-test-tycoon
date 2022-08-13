@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity.ScheduleNew;
 using TechTest.Ryanair.Tycoon.Domain.Entities;
 
-namespace TechTest.Ryanair.Tycoon.Api.Requests;
+namespace TechTest.Ryanair.Tycoon.Api.Requests.Activities;
 
 public class ScheduleNewActivityRequest
 {

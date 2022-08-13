@@ -34,6 +34,8 @@ internal class GetBusiestWorkersUseCase : UseCaseBase<IEnumerable<Worker>>, IGet
         return Result.Success(busiestWorkers);
     }
 
+    public Task<Result<IEnumerable<Worker>>> HandleAsync(GetWeeklyTopTenBusiestWorkersCommand command) => HandleAsync(command as GetBusiestWorkersCommand);
+
     private GetBusiestWorkersCommand UseDefault() => new((int)_options.GetQuantity,(DateTime)_options.StartDate, (DateTime)_options.FinishDate);
 }
 

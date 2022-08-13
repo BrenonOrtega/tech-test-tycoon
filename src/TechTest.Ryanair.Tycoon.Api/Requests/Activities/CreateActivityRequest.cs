@@ -1,6 +1,6 @@
 ﻿using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.CreateActivity;
 
-namespace TechTest.Ryanair.Tycoon.Api.Requests
+namespace TechTest.Ryanair.Tycoon.Api.Requests.Activities
 {
     public class CreateActivityRequest
     {

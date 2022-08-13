@@ -1,7 +1,8 @@
 ﻿using Flurl.Http;
 using Microsoft.AspNetCore.TestHost;
 using System.Net;
-using TechTest.Ryanair.Tycoon.Api.Requests;
+using TechTest.Ryanair.Tycoon.Api.Requests.Activities;
+using TechTest.Ryanair.Tycoon.Api.Requests.Workers;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.CreateActivity;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.GetActivityById;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity.AssignExistent;

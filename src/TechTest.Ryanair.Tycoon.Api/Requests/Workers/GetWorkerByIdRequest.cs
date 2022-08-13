@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using TechTest.Ryanair.Tycoon.Application.WorkerUseCases.GetWorkerById;
 
-namespace TechTest.Ryanair.Tycoon.Api.Requests;
+namespace TechTest.Ryanair.Tycoon.Api.Requests.Workers;
 
 public class GetWorkerByIdRequest
 {

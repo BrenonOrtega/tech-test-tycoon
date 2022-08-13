@@ -14,12 +14,37 @@ public class GetBusiestWorkersUseCaseTests
     [Fact]
     public async Task Getting_Busiest_Workers_Should_Pass()
     {
+        var (sut, _, workers) = await GetUseCase();
+
+        var result = await sut.HandleAsync(new GetBusiestWorkersCommand(count: 2, new DateTime(2019, 1, 1), new DateTime(2022, 10, 11)));
+
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().BeEquivalentTo(workers.Take(2));
+    }
+
+    [Fact]
+    public async Task Getting_Weekly_Top_Ten_Workers_Should_Pass()
+    {
+        var (sut, repo, workers) = await GetUseCase();
+
+        await repo.CreateAsync(new Worker(Guid.NewGuid(), "Z")
+                .WorksIn(new BuildComponentActivity(Guid.NewGuid(), DateTime.Now.AddDays(-3), DateTime.Now))
+                .Value);
+
+        var result = await sut.HandleAsync(new GetWeeklyTopTenBusiestWorkersCommand());
+
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().HaveCount(1);
+    }
+
+    private static async Task<(IGetBusiestWorkersUseCase, IWorkerRepository, IEnumerable<Worker>)> GetUseCase()
+    {
         var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string>()
-            {
+                    .AddInMemoryCollection(new Dictionary<string, string>()
+                    {
                 { $"{nameof(GetBusiestWorkersOptions)}:{nameof(GetBusiestWorkersOptions.GetQuantity)}", "10" }
-            })
-            .Build();
+                    })
+                    .Build();
 
         var provider = new ServiceCollection().AddInfrastructure().AddUseCases(configuration).AddLogging().BuildServiceProvider();
 
@@ -29,13 +54,11 @@ public class GetBusiestWorkersUseCaseTests
 
         var workers = await SeedDatabaseAsync(repo);
 
-        var result = await sut.HandleAsync(new GetBusiestWorkersCommand(count: 2, new DateTime(2019, 1, 1), new DateTime(2022, 10, 11)));
 
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEquivalentTo(workers.Take(2));
+        return (sut, repo, workers);
     }
 
-    private async Task<List<Worker>> SeedDatabaseAsync(IWorkerRepository repo)
+    private static async Task<List<Worker>> SeedDatabaseAsync(IWorkerRepository repo)
     {
         var workers = new List<Worker>()
         {

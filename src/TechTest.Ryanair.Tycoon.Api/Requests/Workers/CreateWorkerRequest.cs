@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using TechTest.Ryanair.Tycoon.Application.WorkerUseCases.CreateWorker;
 
-namespace TechTest.Ryanair.Tycoon.Api.Requests;
+namespace TechTest.Ryanair.Tycoon.Api.Requests.Workers;
 
 [BindProperties]
 public class CreateWorkerRequest

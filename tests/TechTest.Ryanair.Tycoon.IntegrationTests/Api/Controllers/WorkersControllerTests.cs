@@ -1,6 +1,6 @@
 ﻿using Flurl.Http;
 using System.Net;
-using TechTest.Ryanair.Tycoon.Api.Requests;
+using TechTest.Ryanair.Tycoon.Api.Requests.Workers;
 using TechTest.Ryanair.Tycoon.Application;
 using TechTest.Ryanair.Tycoon.Application.WorkerUseCases.CreateWorker;
 using TechTest.Ryanair.Tycoon.Domain.Entities;

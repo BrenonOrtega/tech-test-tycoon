@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Text.Json;
-using TechTest.Ryanair.Tycoon.Api.Requests;
 using TechTest.Ryanair.Tycoon.Application;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.CreateActivity;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.GetActivityById;
@@ -9,6 +8,7 @@ using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity.Sc
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.ScheduleActivity.AssignExistent;
 using Awarean.Sdk.Result;
 using TechTest.Ryanair.Tycoon.Application.ActivitiesUseCases.UpdateDates;
+using TechTest.Ryanair.Tycoon.Api.Requests.Activities;
 
 namespace TechTest.Ryanair.Tycoon.Api.Controllers;
 
