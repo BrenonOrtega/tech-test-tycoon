@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  techtest.ryanair.tycoon.api:
+    image: ${DOCKER_REGISTRY-}techtestryanairtycoonapi
+    build:
+      context: .
+      dockerfile: src/TechTest.Ryanair.Tycoon.Api/Dockerfile

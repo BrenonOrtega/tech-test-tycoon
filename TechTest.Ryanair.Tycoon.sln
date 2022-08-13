@@ -1,31 +1,30 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30114.105
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{9D0AF5CC-7E8D-4E32-8694-2A802094D0E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechTest.Ryanair.Tycoon.UnitTests", "tests\TechTest.Ryanair.Tycoon.UnitTests\TechTest.Ryanair.Tycoon.UnitTests.csproj", "{EEE4E411-C4B7-464D-B1CF-F68148CD44D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TechTest.Ryanair.Tycoon.UnitTests", "tests\TechTest.Ryanair.Tycoon.UnitTests\TechTest.Ryanair.Tycoon.UnitTests.csproj", "{EEE4E411-C4B7-464D-B1CF-F68148CD44D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechTest.Ryanair.Tycoon.IntegrationTests", "tests\TechTest.Ryanair.Tycoon.IntegrationTests\TechTest.Ryanair.Tycoon.IntegrationTests.csproj", "{885B7FCC-8AB3-4CAD-8171-9B39B41B62DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TechTest.Ryanair.Tycoon.IntegrationTests", "tests\TechTest.Ryanair.Tycoon.IntegrationTests\TechTest.Ryanair.Tycoon.IntegrationTests.csproj", "{885B7FCC-8AB3-4CAD-8171-9B39B41B62DA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F1418ECE-665F-4CBD-A7F3-958373152A42}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechTest.Ryanair.Tycoon.Api", "src\TechTest.Ryanair.Tycoon.Api\TechTest.Ryanair.Tycoon.Api.csproj", "{281E851C-A2B7-470D-8F63-675C0E6EE686}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TechTest.Ryanair.Tycoon.Api", "src\TechTest.Ryanair.Tycoon.Api\TechTest.Ryanair.Tycoon.Api.csproj", "{281E851C-A2B7-470D-8F63-675C0E6EE686}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechTest.Ryanair.Tycoon.Application", "src\TechTest.Ryanair.Tycoon.Application\TechTest.Ryanair.Tycoon.Application.csproj", "{B7531608-4581-462B-8A1E-20D57A875843}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TechTest.Ryanair.Tycoon.Application", "src\TechTest.Ryanair.Tycoon.Application\TechTest.Ryanair.Tycoon.Application.csproj", "{B7531608-4581-462B-8A1E-20D57A875843}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechTest.Ryanair.Tycoon.Domain", "src\TechTest.Ryanair.Tycoon.Domain\TechTest.Ryanair.Tycoon.Domain.csproj", "{AC7D87DD-524E-439A-8891-4A03BB3A6F9B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TechTest.Ryanair.Tycoon.Domain", "src\TechTest.Ryanair.Tycoon.Domain\TechTest.Ryanair.Tycoon.Domain.csproj", "{AC7D87DD-524E-439A-8891-4A03BB3A6F9B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechTest.Ryanair.Tycoon.Infra", "src\TechTest.Ryanair.Tycoon.Infra\TechTest.Ryanair.Tycoon.Infra.csproj", "{B4114812-1D62-4EE4-8749-E8178BF35454}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TechTest.Ryanair.Tycoon.Infra", "src\TechTest.Ryanair.Tycoon.Infra\TechTest.Ryanair.Tycoon.Infra.csproj", "{B4114812-1D62-4EE4-8749-E8178BF35454}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{3BA6F814-5BCB-4F0C-923A-C4987984CC9A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{EEE4E411-C4B7-464D-B1CF-F68148CD44D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -52,6 +51,13 @@ Global
 		{B4114812-1D62-4EE4-8749-E8178BF35454}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B4114812-1D62-4EE4-8749-E8178BF35454}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B4114812-1D62-4EE4-8749-E8178BF35454}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BA6F814-5BCB-4F0C-923A-C4987984CC9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BA6F814-5BCB-4F0C-923A-C4987984CC9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BA6F814-5BCB-4F0C-923A-C4987984CC9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BA6F814-5BCB-4F0C-923A-C4987984CC9A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{EEE4E411-C4B7-464D-B1CF-F68148CD44D6} = {9D0AF5CC-7E8D-4E32-8694-2A802094D0E5}
@@ -60,5 +66,8 @@ Global
 		{B7531608-4581-462B-8A1E-20D57A875843} = {F1418ECE-665F-4CBD-A7F3-958373152A42}
 		{AC7D87DD-524E-439A-8891-4A03BB3A6F9B} = {F1418ECE-665F-4CBD-A7F3-958373152A42}
 		{B4114812-1D62-4EE4-8749-E8178BF35454} = {F1418ECE-665F-4CBD-A7F3-958373152A42}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {08CD417F-CDB7-4C20-8430-122EAA12C6BC}
 	EndGlobalSection
 EndGlobal
