@@ -31,8 +31,6 @@ internal class ScheduleActivityBase : IScheduleActivityBase
             return Result.Fail<TimedActivity>(ApplicationErrors.WorkerNotFound);
 
         var activity = await _unitOfWork.ActivityRepository.GetAsync(command.Activity.Id);
-        if (activity != TimedActivity.Null)
-            return Result.Fail<TimedActivity>(ApplicationErrors.DuplicatedId);
 
         var scheduleResult = await ScheduleForWorkers(command.Activity, workers);
 
