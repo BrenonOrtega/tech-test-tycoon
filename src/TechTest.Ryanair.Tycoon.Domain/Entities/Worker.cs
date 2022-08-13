@@ -6,32 +6,18 @@ namespace TechTest.Ryanair.Tycoon.Domain.Entities;
 
 public class Worker : IActivityWorker
 {
-    public Guid Id { get; private set; }
-    public string Name { get; private set; }
-
     private readonly Dictionary<Guid, TimedActivity> _activities = new();
-    public ImmutableHashSet<TimedActivity> Activities => _activities.Values.ToImmutableHashSet();
-
-    public Status ActualStatus
-    {
-        get
-        {
-            var moment = DateTime.Now;
-            if (Activities.Any(x => x.Start < moment && x.Finish > moment))
-                return Status.Working;
-
-            if (Activities.Any(x => x.Finish < moment && x.FinishRestingDate > moment))
-                return Status.Recharging;
-
-            return Status.Idle;
-        }
-    }
 
     public Worker(Guid id, string name)
     {
         Id = id;
         Name = name;
     }
+    
+    public Guid Id { get; private set; }
+    public string Name { get; private set; }
+    public ImmutableHashSet<TimedActivity> Activities => _activities.Values.ToImmutableHashSet();
+    public Status ActualStatus => GetStatus();
 
     public WorksInResult WorksIn(TimedActivity activity)
     {
@@ -59,15 +45,6 @@ public class Worker : IActivityWorker
         return new WorksInResult(this);
     }
 
-    public enum Status
-    {
-        Working,
-        Recharging,
-        Idle
-    }
-
-    public static readonly Worker Null = new(Guid.Empty, string.Empty);
-
     public Result Unassign(TimedActivity activity)
     {
         if(_activities.Remove(activity.Id, out _))
@@ -86,20 +63,7 @@ public class Worker : IActivityWorker
         return cannotAttend;
     }
 
-    internal void GetNewShift(TimedActivity activity)
-    {
-        var unassignment = Unassign(_activities[activity.Id]);
-
-        if (unassignment.IsFailed)
-            throw new InvalidOperationException($"Exception happened when updating schedule {activity.Id} for worker {Id}.");
-
-        var worksInResult = WorksIn(activity);
-
-        if (worksInResult.IsFailed)
-            throw new InvalidOperationException($"Exception happened when updating schedule {activity.Id} for worker {Id}.");
-    }
-
-    public TimeSpan WorkTimeBetween(DateTime initialDate, DateTime finalDate)
+     public TimeSpan WorkTimeBetween(DateTime initialDate, DateTime finalDate)
     {
         var overlaps = Activities.Where(x => x.WouldOverLap(initialDate, finalDate));
 
@@ -114,4 +78,38 @@ public class Worker : IActivityWorker
         static DateTime EndPeriod(DateTime finalDate, TimedActivity activity) 
             => activity.Finish > finalDate ? finalDate : activity.Finish;
     }
+
+    internal void GetNewShift(TimedActivity activity)
+    {
+        var unassignment = Unassign(_activities[activity.Id]);
+
+        if (unassignment.IsFailed)
+            throw new InvalidOperationException($"Exception happened when updating schedule {activity.Id} for worker {Id}.");
+
+        var worksInResult = WorksIn(activity);
+
+        if (worksInResult.IsFailed)
+            throw new InvalidOperationException($"Exception happened when updating schedule {activity.Id} for worker {Id}.");
+    }
+
+    private Status GetStatus()
+    {
+        var moment = DateTime.Now;
+        if (Activities.Any(x => x.Start < moment && x.Finish > moment))
+            return Status.Working;
+
+        if (Activities.Any(x => x.Finish < moment && x.FinishRestingDate > moment))
+            return Status.Recharging;
+
+        return Status.Idle;
+    }
+
+    public enum Status
+    {
+        Working,
+        Recharging,
+        Idle
+    }
+
+    public static readonly Worker Null = new(Guid.Empty, string.Empty);
 }
